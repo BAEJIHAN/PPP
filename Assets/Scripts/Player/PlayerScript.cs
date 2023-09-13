@@ -213,13 +213,13 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            if (PrevAniName != "Idle")
-            {
-                Ani.SetTrigger("Idle");
-                PrevAniName = "Idle";
-                State = PLAYERSTATE.IDLE;
-            }
-            
+            //if (PrevAniName != "Idle")
+            //{
+            //    Ani.SetTrigger("Idle");
+            //    PrevAniName = "Idle";
+            //    State = PLAYERSTATE.IDLE;
+            //}
+
         }
 
         
