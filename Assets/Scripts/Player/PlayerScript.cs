@@ -7,9 +7,13 @@ public enum PLAYERSTATE
 {
     IDLE,
     MOVE,
-    ATTACK
+    ATTACK,    
+    JUMPAIR,
+    JUMPEND,
+    JUMPDOUBLE,
+    ROLL
 }
-public class PlayerScript : MonoBehaviour
+public partial class PlayerScript : MonoBehaviour
 {
     Animator Ani;
     Rigidbody Rb;
@@ -20,6 +24,19 @@ public class PlayerScript : MonoBehaviour
     float RotateSpeed = 8;
     string PrevAniName = "";
     int PressedKey = 0;
+
+
+
+    // ////////점프
+    float JumpVelocity = 7;
+    float CurJumpVelocity = 7;
+    float JumpAcc = -9.8f;
+    int JumpPressedKey = 0;     
+    bool IsDoubleJumped=false;
+
+    ////////구르기
+    bool IsRollMove = false;
+    float RollSpeed = 7;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -36,15 +53,21 @@ public class PlayerScript : MonoBehaviour
     {
         PressedKey = 0;
 
+        MoveKeyCheck();
+
         KeyCheck();
     }
 
     private void FixedUpdate()
     {
         MoveUpdate();
+
+        JumpUpdate();
+
+        RollUpdate();
     }
 
-    void KeyCheck()
+    void MoveKeyCheck()
     {
 
         if (Input.GetKey(KeyCode.RightArrow))//오른쪽 키
@@ -67,6 +90,11 @@ public class PlayerScript : MonoBehaviour
             PressedKey = PressedKey | 0b00001000;
         }
 
+        
+    }
+
+    void KeyCheck()
+    {
         if (Input.GetKeyDown(KeyCode.Z))//공격 키
         {
             if (PrevAniName != "Attack1")
@@ -76,14 +104,48 @@ public class PlayerScript : MonoBehaviour
                 State = PLAYERSTATE.ATTACK;
             }
         }
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {            
+
+            if (PLAYERSTATE.IDLE==State || PLAYERSTATE.MOVE == State)
+            {
+                Ani.SetTrigger("JumpAir");
+                PrevAniName = "JumpAir";
+                State = PLAYERSTATE.JUMPAIR;
+                CurJumpVelocity = JumpVelocity;
+                JumpPressedKey = PressedKey;
+            }
+            else if(PLAYERSTATE.JUMPAIR == State && false==IsDoubleJumped)
+            {
+               
+
+                Ani.SetTrigger("JumpDouble");
+                PrevAniName = "JumpDouble";
+                State = PLAYERSTATE.JUMPDOUBLE;
+                CurJumpVelocity = JumpVelocity;
+                JumpPressedKey = PressedKey;
+                IsDoubleJumped = true;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.C) && State != PLAYERSTATE.ROLL)
+        {
+            Ani.SetTrigger("Roll");
+            PrevAniName = "Roll";
+            State = PLAYERSTATE.ROLL;
+         
+        }
     }
 
     void MoveUpdate()//
     {
-        if (PLAYERSTATE.ATTACK == State)
+        if (!(PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State))
             return;
 
-        if(PressedKey == 0b00000100)//위 키
+        
+
+        if (PressedKey == 0b00000100)//위 키
         {
             if(PrevAniName!="MoveF")
             {
@@ -213,33 +275,106 @@ public class PlayerScript : MonoBehaviour
         }
         else
         {
-            //if (PrevAniName != "Idle")
-            //{
-            //    Ani.SetTrigger("Idle");
-            //    PrevAniName = "Idle";
-            //    State = PLAYERSTATE.IDLE;
-            //}
+            if (PrevAniName != "Idle")
+            {
+                Ani.SetTrigger("Idle");
+                PrevAniName = "Idle";
+                State = PLAYERSTATE.IDLE;
+            }
 
+        }      
+
+    }
+
+    void JumpUpdate()
+    {
+        if(!(PLAYERSTATE.JUMPAIR==State || PLAYERSTATE.JUMPDOUBLE == State))
+        {
+            return;
         }
 
+        CurJumpVelocity += Time.deltaTime * JumpAcc;
+        Rb.MovePosition(Rb.position + CurJumpVelocity*Time.deltaTime*Vector3.up);
+
+        if (JumpPressedKey == 0b00000100)//위 키
+        {         
+            Vector3 MoveStep = Vector3.forward * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
+        else if (JumpPressedKey == 0b00001000)//아래 
+        {           
+            Vector3 MoveStep = -Vector3.forward * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
+        else if (JumpPressedKey == 0b00000001)//오른쪽 키
+        {
+            Vector3 MoveStep = Vector3.right * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
+        else if (JumpPressedKey == 0b00000010)//왼쪽 키
+        {         
+            Vector3 MoveStep = Vector3.left * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
+        else if (JumpPressedKey == 0b00000101)//오른쪽 + 위 키
+        {           
+            Vector3 MoveStep = (Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
+        else if (JumpPressedKey == 0b00001001)//오른쪽 + 아래 키
+        {
+            Vector3 MoveStep = (Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
+        else if (JumpPressedKey == 0b00001010)//왼쪽  + 아래 키
+        {
+            Vector3 MoveStep = (-Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
+        else if (JumpPressedKey == 0b00000110)//왼쪽 + 위 키
+        {      
+            Vector3 MoveStep = (-Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
+            Rb.MovePosition(Rb.position + MoveStep);
+            Rb.rotation = Quaternion.Slerp(Rb.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotateSpeed * Time.deltaTime);
+        }
         
 
-       
-
-
-
-
-
 
     }
 
-
-
-    ///  ////////////////////////////////// 애니메이션 이벤트 함수
-    void Attack1Func()
+    void RollUpdate()
     {
-        Ani.SetTrigger("Idle");
-        PrevAniName = "Idle";
-        State = PLAYERSTATE.IDLE;
+        if (PLAYERSTATE.ROLL != State)
+            return;
+        if (!IsRollMove)
+            return;
+        Vector3 MoveStep = transform.forward * RollSpeed * Time.deltaTime;
+        Rb.MovePosition(Rb.position + MoveStep);
     }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag=="Ground")
+        {
+            if (PLAYERSTATE.JUMPAIR == State)
+            {
+
+                Ani.SetTrigger("JumpEnd");
+                PrevAniName = "JumpEnd";
+                State = PLAYERSTATE.JUMPEND;
+                IsDoubleJumped = false;
+            }
+        }
+    }
+
+
+
+
 }
