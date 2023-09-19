@@ -50,6 +50,49 @@ public partial class PlayerScript : MonoBehaviour
     }
 
 
+    void AttackB1EndFunc()
+    {
+        if (AttackBCombo == 1)
+        {
+            Ani.SetTrigger("AttackB2");
+            PrevAniName = "AttackB2";
+            State = PLAYERSTATE.ATTACKB2;
+        }
+        else
+        {
+            Ani.SetTrigger("Idle");
+            PrevAniName = "Idle";
+            State = PLAYERSTATE.IDLE;
+            AttackBCombo = 0;
+        }
+
+    }
+
+    void AttackB2EndFunc()
+    {
+        if (AttackBCombo == 2)
+        {
+            Ani.SetTrigger("AttackB3");
+            PrevAniName = "AttackB3";
+            State = PLAYERSTATE.ATTACKB3;
+        }
+        else
+        {
+            Ani.SetTrigger("Idle");
+            PrevAniName = "Idle";
+            State = PLAYERSTATE.IDLE;
+            AttackBCombo = 0;
+        }
+    }
+
+    void AttackB3EndFunc()
+    {
+        Ani.SetTrigger("Idle");
+        PrevAniName = "Idle";
+        State = PLAYERSTATE.IDLE;
+        AttackBCombo = 0;
+    }
+
     void JumpEndEndFunc()
     {
         Ani.SetTrigger("Idle");

@@ -14,9 +14,14 @@ public enum PLAYERSTATE
     ATTACKA1,
     ATTACKA2,
     ATTACKA3,
+    ATTACKB1,
+    ATTACKB2,
+    ATTACKB3,
 }
 public partial class PlayerScript : MonoBehaviour
 {
+
+  
     Animator Ani;
     CharacterController CC;
 
@@ -33,6 +38,8 @@ public partial class PlayerScript : MonoBehaviour
     float JumpVelocity = 6;
     float CurJumpVelocity = 6;
     float JumpAcc = -9.8f;
+    float Mass = 1.5f;
+    float JumpSpeed = 4;
     int JumpPressedKey = 0;     
     bool IsDoubleJumped=false;
 
@@ -42,21 +49,26 @@ public partial class PlayerScript : MonoBehaviour
 
     ////////공격A
     int AttackACombo = 0;
+
+    ////////공격B
+    int AttackBCombo = 0;
     // Start is called before the first frame update
     private void Awake()
     {
+      
         Ani = GetComponent<Animator>();
         CC = gameObject.GetComponent<CharacterController>();
     }
     void Start()
     {
-       
+        SetAttackASpeed(1.0f);
+        SetAttackBSpeed(1.0f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        SampleMgr.Inst.DText.text = State.ToString()+"\n"+CurJumpVelocity.ToString();
+    
         
         PressedKey = 0;
 
@@ -125,7 +137,31 @@ public partial class PlayerScript : MonoBehaviour
            
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.X))//공격 키
+        {
+            if (PLAYERSTATE.ATTACKB1 == State)//2타
+            {
+                AttackBCombo = 1;
+            }
+            if (PLAYERSTATE.ATTACKB2 == State)
+            {
+                AttackBCombo = 2;
+            }
+            if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)//1타
+            {
+                if (AttackBCombo == 0)
+                {
+                    Ani.SetTrigger("AttackB1");
+                    PrevAniName = "AttackB1";
+                    State = PLAYERSTATE.ATTACKB1;
+                }
+            }
+
+
+        }
+
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {            
 
             if (PLAYERSTATE.IDLE==State || PLAYERSTATE.MOVE == State)
@@ -143,7 +179,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("JumpDouble");
                 PrevAniName = "JumpDouble";
                 State = PLAYERSTATE.JUMPDOUBLE;
-                CurJumpVelocity = JumpVelocity*2;
+                CurJumpVelocity = JumpVelocity;
                 JumpPressedKey = PressedKey;
                 IsDoubleJumped = true;
             }
@@ -315,59 +351,63 @@ public partial class PlayerScript : MonoBehaviour
             return;
         }
 
-        CurJumpVelocity += Time.deltaTime * JumpAcc;
+       
+
+        CurJumpVelocity += Time.deltaTime * JumpAcc* Mass;
         CC.Move(CurJumpVelocity * Time.deltaTime * Vector3.up);      
 
         if (JumpPressedKey == 0b00000100)//위 키
         {         
-            Vector3 MoveStep = Vector3.forward * Speed*Time.deltaTime;
+            Vector3 MoveStep = Vector3.forward * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00001000)//아래 
         {           
-            Vector3 MoveStep = -Vector3.forward * Speed * Time.deltaTime;
+            Vector3 MoveStep = -Vector3.forward * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000001)//오른쪽 키
         {
-            Vector3 MoveStep = Vector3.right * Speed * Time.deltaTime;
+            Vector3 MoveStep = Vector3.right * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000010)//왼쪽 키
         {         
-            Vector3 MoveStep = Vector3.left * Speed * Time.deltaTime;
+            Vector3 MoveStep = Vector3.left * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000101)//오른쪽 + 위 키
         {           
-            Vector3 MoveStep = (Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
+            Vector3 MoveStep = (Vector3.right + Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00001001)//오른쪽 + 아래 키
         {
-            Vector3 MoveStep = (Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
+            Vector3 MoveStep = (Vector3.right - Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00001010)//왼쪽  + 아래 키
         {
-            Vector3 MoveStep = (-Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
+            Vector3 MoveStep = (-Vector3.right - Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000110)//왼쪽 + 위 키
         {      
-            Vector3 MoveStep = (-Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
+            Vector3 MoveStep = (-Vector3.right + Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotateSpeed * Time.deltaTime);
         }
-        
-        if(CC.isGrounded)
+
+
+       
+        if (CC.isGrounded)
         {
             Ani.SetTrigger("JumpEnd");
             PrevAniName = "JumpEnd";
@@ -388,8 +428,14 @@ public partial class PlayerScript : MonoBehaviour
         CC.Move(MoveStep);
     }
 
-   
-
+    void SetAttackASpeed(float speed)
+    {
+        Ani.SetFloat("AttackASpeed", speed);
+    }
+    void SetAttackBSpeed(float speed)
+    {
+        Ani.SetFloat("AttackBSpeed", speed);
+    }
 
 
 }
