@@ -85,59 +85,6 @@ public partial class PlayerScript : MonoBehaviour
         }
     }
 
-    void AttackSpinPreEnd()
-    {
-        Ani.SetTrigger("AttackSpin");
-        PrevAniName = "AttackSpin";
-    }
-
-    void AttackSpinOnEnd()
-    {
-        Ani.SetTrigger("AttackSpinPost");
-        PrevAniName = "AttackSpinPost";
-    }
-
-    void AttackSpinPostEnd()
-    {
-        Ani.SetTrigger("Idle");
-        PrevAniName = "Idle";
-        State = PLAYERSTATE.IDLE;
-    }
-
-    void AttackSmashStartEnd()
-    {
-        Ani.SetTrigger("AttackSmashCastingA");
-        PrevAniName = "AttackSmashCastingA";
-        State = PLAYERSTATE.ATTACKSMASHCASTING;
-    }
-
-    void AttackSmashCastingAEnd()
-    {
-        if(Input.GetKey(KeyCode.A))
-        {
-            Ani.SetTrigger("AttackSmashCastingB");
-            PrevAniName = "AttackSmashCastingB";
-        }
-        
-    }
-
-    void AttackSmashCastingBEnd()
-    {
-        if (Input.GetKey(KeyCode.A))
-        {
-            Ani.SetTrigger("AttackSmashCastingA");
-            PrevAniName = "AttackSmashCastingA";
-        }
-        
-    }
-    void AttackSmashEnd()
-    {
-        Ani.SetTrigger("Idle");
-        PrevAniName = "Idle";
-        State = PLAYERSTATE.IDLE;
-    }
-
-
     void AttackB3EndFunc()
     {
         Ani.SetTrigger("Idle");

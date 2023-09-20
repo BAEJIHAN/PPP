@@ -17,10 +17,6 @@ public enum PLAYERSTATE
     ATTACKB1,
     ATTACKB2,
     ATTACKB3,
-    ATTACKSPIN,
-    ATTACKSMASHSTART,
-    ATTACKSMASHCASTING,
-    ATTACKSMASH
 }
 public partial class PlayerScript : MonoBehaviour
 {
@@ -57,10 +53,6 @@ public partial class PlayerScript : MonoBehaviour
     ////////공격B
     int AttackBCombo = 0;
     // Start is called before the first frame update
-
-    // /////// 공격 Spin
-    float CurSpinTime = 0;
-    float MaxSpinTime = 1.0f;
     private void Awake()
     {
       
@@ -83,8 +75,6 @@ public partial class PlayerScript : MonoBehaviour
         MoveKeyCheck();
 
         KeyCheck();
-
-        SmashCastingUpdate();
     }
 
     private void FixedUpdate()
@@ -94,8 +84,6 @@ public partial class PlayerScript : MonoBehaviour
         JumpUpdate();
 
         RollUpdate();
-
-        SpinUpdate();
     }
 
     void MoveKeyCheck()
@@ -126,29 +114,7 @@ public partial class PlayerScript : MonoBehaviour
 
     void KeyCheck()
     {
-        if(Input.GetKeyDown(KeyCode.A))
-        {
-            if (PLAYERSTATE.ATTACKSMASHSTART != State)//2타
-            {
-                Ani.SetTrigger("AttackSmashStart");
-                PrevAniName = "AttackSmashStart";
-                State = PLAYERSTATE.ATTACKSMASHSTART;
-            }
-        }
-
-
-        if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.X))//공격 키
-        {
-            if (PLAYERSTATE.ATTACKSPIN != State)//2타
-            {
-                Ani.SetTrigger("AttackSpinPre");
-                PrevAniName = "AttackSpinPre";
-                State = PLAYERSTATE.ATTACKSPIN;
-            }
-            
-        }
-
-        if (Input.GetKeyDown(KeyCode.Z))//공격 키1
+        if (Input.GetKeyDown(KeyCode.Z))//공격 키
         {
             if (PLAYERSTATE.ATTACKA1 == State)//2타
             {
@@ -171,7 +137,7 @@ public partial class PlayerScript : MonoBehaviour
            
         }
 
-        if (Input.GetKeyDown(KeyCode.X))//공격 키2
+        if (Input.GetKeyDown(KeyCode.X))//공격 키
         {
             if (PLAYERSTATE.ATTACKB1 == State)//2타
             {
@@ -462,92 +428,6 @@ public partial class PlayerScript : MonoBehaviour
         CC.Move(MoveStep);
     }
 
-    void SpinUpdate()
-    {
-        if (PLAYERSTATE.ATTACKSPIN != State)
-            return;
-
-        CurSpinTime += Time.deltaTime;
-        if(CurSpinTime>MaxSpinTime)
-        {
-            CurSpinTime = 0;
-            Ani.SetTrigger("AttackSpinPost");
-            PrevAniName = "AttackSpinPost";
-        }
-       
-
-
-        if (PressedKey == 0b00000100)//위 키
-        {     
-            Vector3 MoveStep = Vector3.forward * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-        else if (PressedKey == 0b00001000)//아래 
-        {
-            Vector3 MoveStep = -Vector3.forward * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-        else if (PressedKey == 0b00000001)//오른쪽 키
-        {
-            Vector3 MoveStep = Vector3.right * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-        else if (PressedKey == 0b00000010)//왼쪽 키
-        {
-            Vector3 MoveStep = Vector3.left * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-        else if (PressedKey == 0b00000101)//오른쪽 + 위 키
-        {
-            Vector3 MoveStep = (Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-        else if (PressedKey == 0b00001001)//오른쪽 + 아래 키
-        {
-            Vector3 MoveStep = (Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-        else if (PressedKey == 0b00001010)//왼쪽  + 아래 키
-        {
-            Vector3 MoveStep = (-Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-        else if (PressedKey == 0b00000110)//왼쪽 + 위 키
-        {
-            Vector3 MoveStep = (-Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
-            CC.Move(MoveStep);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotateSpeed * Time.deltaTime);
-        }
-       
-    }
-
-    void SmashCastingUpdate()
-    {
-        if (PLAYERSTATE.ATTACKSMASHCASTING != State)
-            return;
-
-        if(Input.GetKeyUp(KeyCode.A))
-        {
-            Ani.SetTrigger("AttackSmash");
-            PrevAniName = "AttackSmash";
-            State = PLAYERSTATE.ATTACKSMASH;
-        }
-    }
     void SetAttackASpeed(float speed)
     {
         Ani.SetFloat("AttackASpeed", speed);
