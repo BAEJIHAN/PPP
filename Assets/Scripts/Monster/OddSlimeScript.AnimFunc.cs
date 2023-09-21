@@ -1,0 +1,22 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public partial class OddSlimeScript : MonRootScript
+{
+
+    void Attack1StartFunc()
+    {
+        MonsterAttack.SetActive(true);
+       
+    }
+
+    void Attack1EndFunc()
+    {
+        MonsterAttack.SetActive(false);
+        State = MONSTATE.MOVE;
+        Ani.SetTrigger("Move");
+        PreAni = "Move";
+       
+    }
+}

@@ -20,7 +20,8 @@ public enum PLAYERSTATE
     ATTACKSPIN,
     ATTACKSMASHSTART,
     ATTACKSMASHCASTING,
-    ATTACKSMASH
+    ATTACKSMASH,
+    DEFEND,
 }
 public partial class PlayerScript : MonoBehaviour
 {
@@ -31,8 +32,8 @@ public partial class PlayerScript : MonoBehaviour
 
     PLAYERSTATE State = PLAYERSTATE.IDLE;
 
-    float Speed = 5;
-    float RotateSpeed = 8;
+    float Speed = 4;
+    float RotSpeed = 8;
     string PrevAniName = "";
     int PressedKey = 0;
 
@@ -49,7 +50,7 @@ public partial class PlayerScript : MonoBehaviour
 
     ////////구르기
     bool IsRollMove = false;
-    float RollSpeed = 7;
+    float RollSpeed = 5;
 
     ////////공격A
     int AttackACombo = 0;
@@ -126,7 +127,22 @@ public partial class PlayerScript : MonoBehaviour
 
     void KeyCheck()
     {
-        if(Input.GetKeyDown(KeyCode.A))
+
+        if(Input.GetKeyDown(KeyCode.D))
+        {
+            Ani.SetTrigger("Defend");
+            PrevAniName = "Defend";
+            State = PLAYERSTATE.DEFEND;
+        }
+
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            Ani.SetTrigger("Idle");
+            PrevAniName = "Idle";
+            State = PLAYERSTATE.IDLE;
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
         {
             if (PLAYERSTATE.ATTACKSMASHSTART != State)//2타
             {
@@ -251,7 +267,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
             
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00001000)//아래 
         {
@@ -267,7 +283,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000001)//오른쪽 키
         {
@@ -283,7 +299,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000010)//왼쪽 키
         {
@@ -299,7 +315,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000101)//오른쪽 + 위 키
         {
@@ -315,7 +331,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00001001)//오른쪽 + 아래 키
         {
@@ -331,7 +347,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00001010)//왼쪽  + 아래 키
         {
@@ -347,7 +363,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000110)//왼쪽 + 위 키
         {
@@ -363,7 +379,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else
         {
@@ -394,49 +410,49 @@ public partial class PlayerScript : MonoBehaviour
         {         
             Vector3 MoveStep = Vector3.forward * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00001000)//아래 
         {           
             Vector3 MoveStep = -Vector3.forward * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000001)//오른쪽 키
         {
             Vector3 MoveStep = Vector3.right * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000010)//왼쪽 키
         {         
             Vector3 MoveStep = Vector3.left * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000101)//오른쪽 + 위 키
         {           
             Vector3 MoveStep = (Vector3.right + Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00001001)//오른쪽 + 아래 키
         {
             Vector3 MoveStep = (Vector3.right - Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00001010)//왼쪽  + 아래 키
         {
             Vector3 MoveStep = (-Vector3.right - Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (JumpPressedKey == 0b00000110)//왼쪽 + 위 키
         {      
             Vector3 MoveStep = (-Vector3.right + Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
             CC.Move(MoveStep);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotSpeed * Time.deltaTime);
         }
 
 
@@ -482,56 +498,56 @@ public partial class PlayerScript : MonoBehaviour
             Vector3 MoveStep = Vector3.forward * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00001000)//아래 
         {
             Vector3 MoveStep = -Vector3.forward * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000001)//오른쪽 키
         {
             Vector3 MoveStep = Vector3.right * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000010)//왼쪽 키
         {
             Vector3 MoveStep = Vector3.left * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000101)//오른쪽 + 위 키
         {
             Vector3 MoveStep = (Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00001001)//오른쪽 + 아래 키
         {
             Vector3 MoveStep = (Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00001010)//왼쪽  + 아래 키
         {
             Vector3 MoveStep = (-Vector3.right - Vector3.forward).normalized * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00000110)//왼쪽 + 위 키
         {
             Vector3 MoveStep = (-Vector3.right + Vector3.forward).normalized * Speed * Time.deltaTime;
             CC.Move(MoveStep);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotateSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotSpeed * Time.deltaTime);
         }
        
     }
@@ -547,6 +563,7 @@ public partial class PlayerScript : MonoBehaviour
             PrevAniName = "AttackSmash";
             State = PLAYERSTATE.ATTACKSMASH;
         }
+       
     }
     void SetAttackASpeed(float speed)
     {

@@ -105,10 +105,20 @@ public partial class PlayerScript : MonoBehaviour
     }
 
     void AttackSmashStartEnd()
-    {
-        Ani.SetTrigger("AttackSmashCastingA");
-        PrevAniName = "AttackSmashCastingA";
-        State = PLAYERSTATE.ATTACKSMASHCASTING;
+    {       
+
+        if (Input.GetKey(KeyCode.A))
+        {
+            Ani.SetTrigger("AttackSmashCastingA");
+            PrevAniName = "AttackSmashCastingA";
+            State = PLAYERSTATE.ATTACKSMASHCASTING;
+        }
+        else
+        {
+            Ani.SetTrigger("Idle");
+            PrevAniName = "Idle";
+            State = PLAYERSTATE.IDLE;
+        }
     }
 
     void AttackSmashCastingAEnd()
