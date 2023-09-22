@@ -16,34 +16,45 @@ public class MonRootScript : MonoBehaviour
     protected Animator Ani;
     protected Rigidbody RB;
     protected string PreAni;
+    public GameObject MonsterAttack;
 
     protected MONSTATE State = MONSTATE.NONE;
     protected float Speed=1;
     protected float RotSpeed = 1;
     protected float AttackDist = 1.5f;
 
-
-    protected GameObject MonsterAttack;
+    protected float CurIdleTime = 0;
+    protected float MaxIdleTime = 2;
+   
     GameObject Player;
+
+    int HitTime = 0;
+    public bool OnHitReady = true;
+
+    protected int MaxHP = 10;
+    protected int CurHP = 10;
     protected void Awake()
     {
         Ani = GetComponent<Animator>();
         RB = GetComponent<Rigidbody>();
-        MonsterAttack = transform.Find("MonsterAttack").gameObject;
+        
     }
     // Start is called before the first frame update
     protected void Start()
     {
-        PreAni = "Idle";
+
         Player = GameObject.Find("Player");
+        State = MONSTATE.MOVE;
+        Ani.SetTrigger("Move");
+        PreAni = "Move";
     }
 
     // Update is called once per frame
     protected void Update()
     {
-        DetectPlayer();
+       
         SampleMgr.Inst.DText.text = State.ToString();
-
+        IdleUpdate();
     }
 
     protected void FixedUpdate()
@@ -74,20 +85,68 @@ public class MonRootScript : MonoBehaviour
         
     }
 
-    void DetectPlayer()
+    void IdleUpdate()
     {
-        if (MONSTATE.NONE != State)
+        if (MONSTATE.IDLE != State)
             return;
 
-        if(Player)
+        CurIdleTime+=Time.deltaTime;
+        if (CurIdleTime > MaxIdleTime)
+        {
+            CurIdleTime = 0;
+            TakeNextAction();
+            
+        }
+            
+    }
+
+    void TakeNextAction()
+    {
+        if ((Player.transform.position - RB.position).magnitude < AttackDist)
+        {
+            State = MONSTATE.ATTACK1;
+            Ani.SetTrigger("Attack1");
+            PreAni = "Attack1";            
+        }
+        else
         {
             State = MONSTATE.MOVE;
             Ani.SetTrigger("Move");
             PreAni = "Move";
         }
     }
+
     protected void OnTriggerEnter(Collider other)
     {
-        
+      
+        if (other.tag == "PlayerAttack" && OnHitReady)
+        {
+            CurHP-=other.gameObject.GetComponent<PlayerAttackScript>().Damage;
+            MonsterAttack.SetActive(false);
+            OnHitReady = false;
+
+            if(CurHP<=0)
+            {
+                CapsuleCollider[] Cols = GetComponentsInChildren<CapsuleCollider>();
+                for(int i=0; i<Cols.Length; i++)
+                {
+                    Cols[i].enabled = false;
+                }
+                State = MONSTATE.DEATH;
+                Ani.SetTrigger("Death");
+                PreAni = "Death";
+            }
+            else
+            {
+                State = MONSTATE.HIT;
+                Ani.SetTrigger("Hit");
+                PreAni = "Hit";
+            }
+            
+
+            
+            
+        }
+       
     }
 }

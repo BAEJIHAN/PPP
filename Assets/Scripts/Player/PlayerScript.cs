@@ -22,11 +22,12 @@ public enum PLAYERSTATE
     ATTACKSMASHCASTING,
     ATTACKSMASH,
     DEFEND,
+    HIT,
 }
 public partial class PlayerScript : MonoBehaviour
 {
 
-  
+    public GameObject PlayerAttack;
     Animator Ani;
     CharacterController CC;
 
@@ -54,14 +55,21 @@ public partial class PlayerScript : MonoBehaviour
 
     ////////공격A
     int AttackACombo = 0;
+    int AttackA1Damage = 1;
+    int AttackA2Damage = 1;
+    int AttackA3Damage = 1;
 
     ////////공격B
     int AttackBCombo = 0;
+    int AttackB1Damage = 1;
+    int AttackB2Damage = 1;
+    int AttackB3Damage = 1;
     // Start is called before the first frame update
 
     // /////// 공격 Spin
     float CurSpinTime = 0;
     float MaxSpinTime = 1.0f;
+    int AttackSpindDamage = 1;
     private void Awake()
     {
       
@@ -144,7 +152,7 @@ public partial class PlayerScript : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            if (PLAYERSTATE.ATTACKSMASHSTART != State)//2타
+            if (PLAYERSTATE.ATTACKSMASHSTART != State)
             {
                 Ani.SetTrigger("AttackSmashStart");
                 PrevAniName = "AttackSmashStart";
@@ -153,10 +161,11 @@ public partial class PlayerScript : MonoBehaviour
         }
 
 
-        if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.X))//공격 키
+        if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.X))//Spin
         {
             if (PLAYERSTATE.ATTACKSPIN != State)//2타
             {
+                PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackSpindDamage;
                 Ani.SetTrigger("AttackSpinPre");
                 PrevAniName = "AttackSpinPre";
                 State = PLAYERSTATE.ATTACKSPIN;
@@ -178,6 +187,7 @@ public partial class PlayerScript : MonoBehaviour
             {
                 if(AttackACombo==0)
                 {
+                    PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackA1Damage;
                     Ani.SetTrigger("AttackA1");
                     PrevAniName = "AttackA1";
                     State = PLAYERSTATE.ATTACKA1;
@@ -201,6 +211,7 @@ public partial class PlayerScript : MonoBehaviour
             {
                 if (AttackBCombo == 0)
                 {
+                    PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackB1Damage;
                     Ani.SetTrigger("AttackB1");
                     PrevAniName = "AttackB1";
                     State = PLAYERSTATE.ATTACKB1;
@@ -250,8 +261,6 @@ public partial class PlayerScript : MonoBehaviour
     {
         if (!(PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State))
             return;
-
-        
 
         if (PressedKey == 0b00000100)//위 키
         {
@@ -401,8 +410,6 @@ public partial class PlayerScript : MonoBehaviour
             return;
         }
 
-       
-
         CurJumpVelocity += Time.deltaTime * JumpAcc* Mass;
         CC.Move(CurJumpVelocity * Time.deltaTime * Vector3.up);      
 
@@ -455,8 +462,6 @@ public partial class PlayerScript : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotSpeed * Time.deltaTime);
         }
 
-
-       
         if (CC.isGrounded)
         {
             Ani.SetTrigger("JumpEnd");
@@ -491,8 +496,6 @@ public partial class PlayerScript : MonoBehaviour
             PrevAniName = "AttackSpinPost";
         }
        
-
-
         if (PressedKey == 0b00000100)//위 키
         {     
             Vector3 MoveStep = Vector3.forward * Speed * Time.deltaTime;
@@ -564,6 +567,21 @@ public partial class PlayerScript : MonoBehaviour
             State = PLAYERSTATE.ATTACKSMASH;
         }
        
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        
+        if(other.tag=="MonsterAttack" &&!IsRollMove)
+        {
+            PlayerAttack.SetActive(false);
+            State = PLAYERSTATE.HIT;
+            Ani.SetTrigger("Hit");
+            PrevAniName = "Hit";
+
+            AttackACombo = 0;            
+            AttackBCombo = 0;
+        }
     }
     void SetAttackASpeed(float speed)
     {

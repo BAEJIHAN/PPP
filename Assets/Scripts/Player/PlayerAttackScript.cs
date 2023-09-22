@@ -5,19 +5,15 @@ using UnityEngine;
 public class PlayerAttackScript : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [HideInInspector] public int Damage = 1;
 
-    // Update is called once per frame
-    void Update()
+    private void OnDisable()
     {
-        
-    }
+        MonRootScript[] Mons = GameObject.FindObjectsOfType<MonRootScript>();
 
-    private void OnTriggerEnter(Collider other)
-    {
-        
+        for(int i=0; i<Mons.Length; i++)
+        {
+            Mons[i].OnHitReady = true;
+        }
     }
 }

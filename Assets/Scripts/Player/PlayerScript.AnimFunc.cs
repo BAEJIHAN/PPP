@@ -6,10 +6,17 @@ public partial class PlayerScript : MonoBehaviour
 {
     // Start is called before the first frame update
     ///  ////////////////////////////////// 애니메이션 이벤트 함수
+    ///  
+    void AttackActiveFunc()
+    {
+        PlayerAttack.SetActive(true);
+    }
     void AttackA1EndFunc()
     {
-        if(AttackACombo==1)
+        PlayerAttack.SetActive(false);
+        if (AttackACombo==1)
         {
+            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackA2Damage;
             Ani.SetTrigger("AttackA2");
             PrevAniName = "AttackA2";
             State = PLAYERSTATE.ATTACKA2;
@@ -26,8 +33,10 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackA2EndFunc()
     {
+        PlayerAttack.SetActive(false);
         if (AttackACombo == 2)
         {
+            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackA3Damage;
             Ani.SetTrigger("AttackA3");
             PrevAniName = "AttackA3";
             State = PLAYERSTATE.ATTACKA3;
@@ -43,6 +52,7 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackA3EndFunc()
     {
+        PlayerAttack.SetActive(false);
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
@@ -52,8 +62,10 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackB1EndFunc()
     {
+        PlayerAttack.SetActive(false);
         if (AttackBCombo == 1)
         {
+            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackB2Damage;
             Ani.SetTrigger("AttackB2");
             PrevAniName = "AttackB2";
             State = PLAYERSTATE.ATTACKB2;
@@ -70,8 +82,10 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackB2EndFunc()
     {
+        PlayerAttack.SetActive(false);
         if (AttackBCombo == 2)
         {
+            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackB3Damage;
             Ani.SetTrigger("AttackB3");
             PrevAniName = "AttackB3";
             State = PLAYERSTATE.ATTACKB3;
@@ -85,6 +99,15 @@ public partial class PlayerScript : MonoBehaviour
         }
     }
 
+    void AttackB3EndFunc()
+    {
+        PlayerAttack.SetActive(false);
+        Ani.SetTrigger("Idle");
+        PrevAniName = "Idle";
+        State = PLAYERSTATE.IDLE;
+        AttackBCombo = 0;
+    }
+
     void AttackSpinPreEnd()
     {
         Ani.SetTrigger("AttackSpin");
@@ -93,6 +116,7 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackSpinOnEnd()
     {
+        PlayerAttack.SetActive(false);
         Ani.SetTrigger("AttackSpinPost");
         PrevAniName = "AttackSpinPost";
     }
@@ -148,13 +172,7 @@ public partial class PlayerScript : MonoBehaviour
     }
 
 
-    void AttackB3EndFunc()
-    {
-        Ani.SetTrigger("Idle");
-        PrevAniName = "Idle";
-        State = PLAYERSTATE.IDLE;
-        AttackBCombo = 0;
-    }
+   
 
     void JumpEndEndFunc()
     {
@@ -173,12 +191,12 @@ public partial class PlayerScript : MonoBehaviour
     void RollStartFunc()
     {
         IsRollMove = true;
-        //GetComponent<CapsuleCollider>().enabled = false;
+        
     }
     void RollStopFunc()
     {
         IsRollMove = false;
-        //GetComponent<CapsuleCollider>().enabled = true;
+        
        
     }
 
@@ -189,5 +207,22 @@ public partial class PlayerScript : MonoBehaviour
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
+    }
+
+    void HitEndFunc()
+    {
+        //if(CC.isGrounded)
+        {
+            Ani.SetTrigger("Idle");
+            PrevAniName = "Idle";
+            State = PLAYERSTATE.IDLE;
+        }
+        //else
+        //{
+        //    Ani.SetTrigger("JumpAir");
+        //    PrevAniName = "JumpAir";
+        //    State = PLAYERSTATE.JUMPAIR;
+        //}
+        
     }
 }

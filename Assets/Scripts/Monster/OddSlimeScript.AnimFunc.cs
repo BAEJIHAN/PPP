@@ -14,9 +14,17 @@ public partial class OddSlimeScript : MonRootScript
     void Attack1EndFunc()
     {
         MonsterAttack.SetActive(false);
-        State = MONSTATE.MOVE;
-        Ani.SetTrigger("Move");
-        PreAni = "Move";
+        
+        State = MONSTATE.IDLE;
+        Ani.SetTrigger("Idle");
+        PreAni = "Idle";
        
+    }
+
+    void HitEndFunc()
+    {
+        State = MONSTATE.IDLE;
+        Ani.SetTrigger("Idle");
+        PreAni = "Idle";
     }
 }

@@ -11,6 +11,7 @@ public partial class OddSlimeScript : MonRootScript
         base.Start();
         Speed = 2;
         RotSpeed = 8;
+        AttackDist = 1.0f;
     }
 
 
