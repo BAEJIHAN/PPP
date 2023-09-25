@@ -21,6 +21,7 @@ public enum PLAYERSTATE
     ATTACKSMASHSTART,
     ATTACKSMASHCASTING,
     ATTACKSMASH,
+    ATTACKAIR,
     DEFEND,
     HIT,
 }
@@ -30,7 +31,7 @@ public partial class PlayerScript : MonoBehaviour
     public GameObject PlayerAttack;
     Animator Ani;
     CharacterController CC;
-
+    GroundCheckScript GC;
     PLAYERSTATE State = PLAYERSTATE.IDLE;
 
     float Speed = 4;
@@ -70,16 +71,24 @@ public partial class PlayerScript : MonoBehaviour
     float CurSpinTime = 0;
     float MaxSpinTime = 1.0f;
     int AttackSpindDamage = 1;
+
+    //공격 Air
+    int AttackAirDamage = 1;
+    bool IsAttackAirReady = true;
+
     private void Awake()
     {
       
         Ani = GetComponent<Animator>();
         CC = gameObject.GetComponent<CharacterController>();
+        GC = gameObject.GetComponent<GroundCheckScript>();
     }
     void Start()
     {
         SetAttackASpeed(1.0f);
         SetAttackBSpeed(1.0f);
+
+        SetAttackRange(2);
     }
 
     // Update is called once per frame
@@ -105,6 +114,8 @@ public partial class PlayerScript : MonoBehaviour
         RollUpdate();
 
         SpinUpdate();
+
+        AttackAirUpdate();
     }
 
     void MoveKeyCheck()
@@ -136,6 +147,8 @@ public partial class PlayerScript : MonoBehaviour
     void KeyCheck()
     {
 
+        
+
         if(Input.GetKeyDown(KeyCode.D))
         {
             Ani.SetTrigger("Defend");
@@ -165,7 +178,7 @@ public partial class PlayerScript : MonoBehaviour
         {
             if (PLAYERSTATE.ATTACKSPIN != State)//2타
             {
-                PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackSpindDamage;
+                GValue.PlayerDamage = AttackSpindDamage;
                 Ani.SetTrigger("AttackSpinPre");
                 PrevAniName = "AttackSpinPre";
                 State = PLAYERSTATE.ATTACKSPIN;
@@ -173,13 +186,22 @@ public partial class PlayerScript : MonoBehaviour
             
         }
 
-        if (Input.GetKeyDown(KeyCode.Z))//공격 키1
+        if (Input.GetKeyDown(KeyCode.Z))
         {
+            if((PLAYERSTATE.JUMPAIR == State|| PLAYERSTATE.JUMPDOUBLE == State)//점프 공격
+                && IsAttackAirReady)
+            {
+                GValue.PlayerDamage = AttackAirDamage;
+                Ani.SetTrigger("AttackAir");
+                PrevAniName = "AttackAir";
+                State = PLAYERSTATE.ATTACKAIR;
+                IsAttackAirReady = false;
+            }
             if (PLAYERSTATE.ATTACKA1 == State)//2타
             {
                 AttackACombo = 1;
             }
-            if (PLAYERSTATE.ATTACKA2 == State)
+            if (PLAYERSTATE.ATTACKA2 == State)//3타
             {
                 AttackACombo = 2;
             }
@@ -187,7 +209,7 @@ public partial class PlayerScript : MonoBehaviour
             {
                 if(AttackACombo==0)
                 {
-                    PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackA1Damage;
+                    GValue.PlayerDamage = AttackA1Damage;
                     Ani.SetTrigger("AttackA1");
                     PrevAniName = "AttackA1";
                     State = PLAYERSTATE.ATTACKA1;
@@ -211,7 +233,7 @@ public partial class PlayerScript : MonoBehaviour
             {
                 if (AttackBCombo == 0)
                 {
-                    PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackB1Damage;
+                    GValue.PlayerDamage = AttackB1Damage;
                     Ani.SetTrigger("AttackB1");
                     PrevAniName = "AttackB1";
                     State = PLAYERSTATE.ATTACKB1;
@@ -462,13 +484,15 @@ public partial class PlayerScript : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotSpeed * Time.deltaTime);
         }
 
-        if (CC.isGrounded)
+        if (GC.IsGrounded())
         {
             Ani.SetTrigger("JumpEnd");
             PrevAniName = "JumpEnd";
             State = PLAYERSTATE.JUMPEND;
             IsDoubleJumped = false;
+            IsAttackAirReady = true;
             CurJumpVelocity = 0;
+            
         }
 
     }
@@ -569,6 +593,76 @@ public partial class PlayerScript : MonoBehaviour
        
     }
 
+    void AttackAirUpdate()
+    {
+        if (PLAYERSTATE.ATTACKAIR != State)
+            return;
+
+        CurJumpVelocity += Time.deltaTime * JumpAcc * Mass;
+        CC.Move(CurJumpVelocity * Time.deltaTime * Vector3.up);
+
+        if (GC.IsGrounded())
+        {
+
+            CurJumpVelocity = 0;
+        }
+        else
+        {
+            if (JumpPressedKey == 0b00000100)//위 키
+            {
+                Vector3 MoveStep = Vector3.forward * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+            else if (JumpPressedKey == 0b00001000)//아래 
+            {
+                Vector3 MoveStep = -Vector3.forward * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(180f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+            else if (JumpPressedKey == 0b00000001)//오른쪽 키
+            {
+                Vector3 MoveStep = Vector3.right * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(90f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+            else if (JumpPressedKey == 0b00000010)//왼쪽 키
+            {
+                Vector3 MoveStep = Vector3.left * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(270f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+            else if (JumpPressedKey == 0b00000101)//오른쪽 + 위 키
+            {
+                Vector3 MoveStep = (Vector3.right + Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(45f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+            else if (JumpPressedKey == 0b00001001)//오른쪽 + 아래 키
+            {
+                Vector3 MoveStep = (Vector3.right - Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(135f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+            else if (JumpPressedKey == 0b00001010)//왼쪽  + 아래 키
+            {
+                Vector3 MoveStep = (-Vector3.right - Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(225f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+            else if (JumpPressedKey == 0b00000110)//왼쪽 + 위 키
+            {
+                Vector3 MoveStep = (-Vector3.right + Vector3.forward).normalized * JumpSpeed * Time.deltaTime;
+                CC.Move(MoveStep);
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(315f, Vector3.up), RotSpeed * Time.deltaTime);
+            }
+        }
+
+        
+
+        
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         
@@ -590,6 +684,14 @@ public partial class PlayerScript : MonoBehaviour
     void SetAttackBSpeed(float speed)
     {
         Ani.SetFloat("AttackBSpeed", speed);
+    }
+
+    public void SetAttackRange(float fvalue)
+    {
+        PlayerAttack.SetActive(true);
+        PlayerAttack.GetComponent<PlayerAttackScript>().ColScaling(fvalue);
+        PlayerAttack.SetActive(false);
+
     }
 
 

@@ -11,12 +11,17 @@ public partial class PlayerScript : MonoBehaviour
     {
         PlayerAttack.SetActive(true);
     }
-    void AttackA1EndFunc()
+
+    void AttackDeActiveFunc()
     {
         PlayerAttack.SetActive(false);
+    }
+    void AttackA1EndFunc()
+    {
+        
         if (AttackACombo==1)
         {
-            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackA2Damage;
+            GValue.PlayerDamage = AttackA2Damage;
             Ani.SetTrigger("AttackA2");
             PrevAniName = "AttackA2";
             State = PLAYERSTATE.ATTACKA2;
@@ -33,10 +38,10 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackA2EndFunc()
     {
-        PlayerAttack.SetActive(false);
+       
         if (AttackACombo == 2)
         {
-            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackA3Damage;
+            GValue.PlayerDamage = AttackA3Damage;
             Ani.SetTrigger("AttackA3");
             PrevAniName = "AttackA3";
             State = PLAYERSTATE.ATTACKA3;
@@ -52,7 +57,7 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackA3EndFunc()
     {
-        PlayerAttack.SetActive(false);
+        
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
@@ -62,10 +67,10 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackB1EndFunc()
     {
-        PlayerAttack.SetActive(false);
+      
         if (AttackBCombo == 1)
         {
-            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackB2Damage;
+            GValue.PlayerDamage = AttackB2Damage;
             Ani.SetTrigger("AttackB2");
             PrevAniName = "AttackB2";
             State = PLAYERSTATE.ATTACKB2;
@@ -82,10 +87,10 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackB2EndFunc()
     {
-        PlayerAttack.SetActive(false);
+      
         if (AttackBCombo == 2)
         {
-            PlayerAttack.GetComponent<PlayerAttackScript>().Damage = AttackB3Damage;
+            GValue.PlayerDamage = AttackB3Damage;
             Ani.SetTrigger("AttackB3");
             PrevAniName = "AttackB3";
             State = PLAYERSTATE.ATTACKB3;
@@ -101,34 +106,34 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackB3EndFunc()
     {
-        PlayerAttack.SetActive(false);
+        
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
         AttackBCombo = 0;
     }
 
-    void AttackSpinPreEnd()
+    void AttackSpinPreEndFunc()
     {
         Ani.SetTrigger("AttackSpin");
         PrevAniName = "AttackSpin";
     }
 
-    void AttackSpinOnEnd()
-    {
-        PlayerAttack.SetActive(false);
-        Ani.SetTrigger("AttackSpinPost");
-        PrevAniName = "AttackSpinPost";
-    }
+    //void AttackSpinOnEnd()
+    //{
+    //    PlayerAttack.SetActive(false);
+    //    Ani.SetTrigger("AttackSpinPost");
+    //    PrevAniName = "AttackSpinPost";
+    //}
 
-    void AttackSpinPostEnd()
+    void AttackSpinPostEndFunc()
     {
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
     }
 
-    void AttackSmashStartEnd()
+    void AttackSmashStartEndFunc()
     {       
 
         if (Input.GetKey(KeyCode.A))
@@ -145,7 +150,7 @@ public partial class PlayerScript : MonoBehaviour
         }
     }
 
-    void AttackSmashCastingAEnd()
+    void AttackSmashCastingAEndFunc()
     {
         if(Input.GetKey(KeyCode.A))
         {
@@ -155,7 +160,7 @@ public partial class PlayerScript : MonoBehaviour
         
     }
 
-    void AttackSmashCastingBEnd()
+    void AttackSmashCastingBEndFunc()
     {
         if (Input.GetKey(KeyCode.A))
         {
@@ -164,14 +169,21 @@ public partial class PlayerScript : MonoBehaviour
         }
         
     }
-    void AttackSmashEnd()
+    void AttackSmashEndFunc()
     {
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
     }
 
-
+    void AttackAirEndFunc()
+    {
+        Ani.SetTrigger("Idle");
+        PrevAniName = "Idle";
+        State = PLAYERSTATE.IDLE;
+        IsAttackAirReady = true;
+        IsDoubleJumped = false;
+    }
    
 
     void JumpEndEndFunc()
@@ -183,9 +195,13 @@ public partial class PlayerScript : MonoBehaviour
 
     void JumpDoubleEndFunc()
     {
-        Ani.SetTrigger("JumpAir");
-        PrevAniName = "JumpAir";
-        State = PLAYERSTATE.JUMPAIR;
+        if(IsAttackAirReady)
+        {
+            Ani.SetTrigger("JumpAir");
+            PrevAniName = "JumpAir";
+            State = PLAYERSTATE.JUMPAIR;
+        }
+       
     }
 
     void RollStartFunc()
@@ -211,18 +227,18 @@ public partial class PlayerScript : MonoBehaviour
 
     void HitEndFunc()
     {
-        //if(CC.isGrounded)
+        if(GC.IsGrounded())
         {
             Ani.SetTrigger("Idle");
             PrevAniName = "Idle";
             State = PLAYERSTATE.IDLE;
         }
-        //else
-        //{
-        //    Ani.SetTrigger("JumpAir");
-        //    PrevAniName = "JumpAir";
-        //    State = PLAYERSTATE.JUMPAIR;
-        //}
-        
+        else
+        {
+            Ani.SetTrigger("JumpAir");
+            PrevAniName = "JumpAir";
+            State = PLAYERSTATE.JUMPAIR;
+        }
+
     }
 }

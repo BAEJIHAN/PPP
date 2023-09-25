@@ -153,6 +153,67 @@ Transform:
   m_Father: {fileID: 1833721219}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &142526845
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_RootOrder
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6603548312819652972, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6605717625734175784, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_Name
+      value: Slime
+      objectReference: {fileID: 0}
+    - target: {fileID: 6605717625734175784, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 09ee2ef8d45aa3a469050a0cb1155aca, type: 3}
 --- !u!1 &148680670
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,7 +964,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1735800188}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.2
   m_Height: 1.4
@@ -969,7 +1030,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1833721219
 Transform:
   m_ObjectHideFlags: 0
@@ -3514,8 +3575,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8855052669310016316}
   - component: {fileID: 9036980634010463846}
-  - component: {fileID: 8189980434422645127}
   - component: {fileID: 8189980434422645130}
+  - component: {fileID: 8189980434422645127}
+  - component: {fileID: 8189980434422645128}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -3536,6 +3598,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerAttack: {fileID: 1735800188}
+--- !u!114 &8189980434422645128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8189980434422645126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ead0b784608e7e4d8468d2c78e977db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDistance: 1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  drawGizmo: 1
 --- !u!143 &8189980434422645130
 CharacterController:
   m_ObjectHideFlags: 0

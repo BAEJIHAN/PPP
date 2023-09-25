@@ -5,19 +5,23 @@ using UnityEngine;
 public class GroundCheckScript : MonoBehaviour
 {
     // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [Header("Boxcast Property")]
+    [SerializeField] private float maxDistance;
+    [SerializeField] private LayerMask groundLayer;
 
-    // Update is called once per frame
-    void Update()
+    [Header("Debug")]
+    [SerializeField] private bool drawGizmo;
+
+    private void OnDrawGizmos()
     {
-        
+        if (!drawGizmo) return;
+
+        Gizmos.color = Color.black;
+        Gizmos.DrawRay(transform.position+Vector3.up, Vector3.down);
     }
 
     public bool IsGrounded()
     {
-        return true;
+        return Physics.Raycast(transform.position+ Vector3.up, Vector3.down, maxDistance, groundLayer);
     }
 }

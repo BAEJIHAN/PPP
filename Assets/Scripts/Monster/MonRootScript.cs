@@ -76,6 +76,7 @@ public class MonRootScript : MonoBehaviour
         }
 
         Vector3 Dir = Player.transform.position-RB.position;
+        Dir.y = 0;
         Dir.Normalize();
         Vector3 MoveStep = Speed * Time.deltaTime * Dir;
         RB.MovePosition(RB.position+MoveStep);
@@ -102,7 +103,11 @@ public class MonRootScript : MonoBehaviour
 
     void TakeNextAction()
     {
-        if ((Player.transform.position - RB.position).magnitude < AttackDist)
+        Vector3 PPos = Player.transform.position;
+        Vector3 MPos = RB.position;
+        PPos.y = 0;
+        MPos.y = 0;
+        if ((PPos - MPos).magnitude < AttackDist)
         {
             State = MONSTATE.ATTACK1;
             Ani.SetTrigger("Attack1");
@@ -121,7 +126,7 @@ public class MonRootScript : MonoBehaviour
       
         if (other.tag == "PlayerAttack" && OnHitReady)
         {
-            CurHP-=other.gameObject.GetComponent<PlayerAttackScript>().Damage;
+            CurHP-=GValue.PlayerDamage;
             MonsterAttack.SetActive(false);
             OnHitReady = false;
 
