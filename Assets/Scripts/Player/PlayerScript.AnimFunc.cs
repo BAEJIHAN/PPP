@@ -16,10 +16,20 @@ public partial class PlayerScript : MonoBehaviour
     {
         PlayerAttack.SetActive(false);
     }
+
+    void AttackA1MoveFunc()
+    {
+        IsAttackA1Move = true;
+    }
+
+    void AttackA1StopFunc()
+    {
+        IsAttackA1Move = false;
+    }
     void AttackA1EndFunc()
     {
         
-        if (AttackACombo==1)
+        if (IsNextAttackA)
         {
             GValue.PlayerDamage = AttackA2Damage;
             Ani.SetTrigger("AttackA2");
@@ -31,88 +41,75 @@ public partial class PlayerScript : MonoBehaviour
             Ani.SetTrigger("Idle");
             PrevAniName = "Idle";
             State = PLAYERSTATE.IDLE;
-            AttackACombo = 0;
+            
         }
-       
+        IsNextAttackA = false;
+
+
+    }
+
+    void AttackA2MoveFunc()
+    {
+        IsAttackA2Move = true;
+    
+    }
+
+    void AttackA2StopFunc()
+    {
+        IsAttackA2Move = false;
+
     }
 
     void AttackA2EndFunc()
     {
-       
-        if (AttackACombo == 2)
+        if(IsNextAttackB)
         {
-            GValue.PlayerDamage = AttackA3Damage;
-            Ani.SetTrigger("AttackA3");
-            PrevAniName = "AttackA3";
-            State = PLAYERSTATE.ATTACKA3;
+            GValue.PlayerDamage = AttackBDamage;
+            Ani.SetTrigger("AttackB");
+            PrevAniName = "AttackB";
+            State = PLAYERSTATE.ATTACKB;
+        }
+        else if(IsNextAttackA)
+        {
+            GValue.PlayerDamage = AttackA1Damage;
+            Ani.SetTrigger("AttackA1");
+            PrevAniName = "AttackA1";
+            State = PLAYERSTATE.ATTACKA1;
         }
         else
         {
             Ani.SetTrigger("Idle");
             PrevAniName = "Idle";
             State = PLAYERSTATE.IDLE;
-            AttackACombo = 0;
+           
         }
+        IsNextAttackA = false;
+        IsNextAttackB = false;
     }
 
-    void AttackA3EndFunc()
+
+    void AttackBMoveFunc()
     {
-        
+        IsAttackBMove = true;
+    }
+
+    void AttackBStopFunc()
+    {
+        IsAttackBMove = false;
+    }
+
+    void AttackBEndFunc()
+    {
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
-        AttackACombo = 0;
-    }
 
-
-    void AttackB1EndFunc()
-    {
-      
-        if (AttackBCombo == 1)
-        {
-            GValue.PlayerDamage = AttackB2Damage;
-            Ani.SetTrigger("AttackB2");
-            PrevAniName = "AttackB2";
-            State = PLAYERSTATE.ATTACKB2;
-        }
-        else
-        {
-            Ani.SetTrigger("Idle");
-            PrevAniName = "Idle";
-            State = PLAYERSTATE.IDLE;
-            AttackBCombo = 0;
-        }
+        IsNextAttackA = false;
+        IsNextAttackB = false;
 
     }
 
-    void AttackB2EndFunc()
-    {
-      
-        if (AttackBCombo == 2)
-        {
-            GValue.PlayerDamage = AttackB3Damage;
-            Ani.SetTrigger("AttackB3");
-            PrevAniName = "AttackB3";
-            State = PLAYERSTATE.ATTACKB3;
-        }
-        else
-        {
-            Ani.SetTrigger("Idle");
-            PrevAniName = "Idle";
-            State = PLAYERSTATE.IDLE;
-            AttackBCombo = 0;
-        }
-    }
-
-    void AttackB3EndFunc()
-    {
-        
-        Ani.SetTrigger("Idle");
-        PrevAniName = "Idle";
-        State = PLAYERSTATE.IDLE;
-        AttackBCombo = 0;
-    }
-
+  
     void AttackSpinPreEndFunc()
     {
         Ani.SetTrigger("AttackSpin");

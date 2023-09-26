@@ -12,11 +12,9 @@ public enum PLAYERSTATE
     JUMPDOUBLE,
     ROLL,
     ATTACKA1,
-    ATTACKA2,
-    ATTACKA3,
-    ATTACKB1,
-    ATTACKB2,
-    ATTACKB3,
+    ATTACKA2,   
+    ATTACKB,
+   
     ATTACKSPIN,
     ATTACKSMASHSTART,
     ATTACKSMASHCASTING,
@@ -55,16 +53,22 @@ public partial class PlayerScript : MonoBehaviour
     float RollSpeed = 5;
 
     ////////공격A
-    int AttackACombo = 0;
+   
     int AttackA1Damage = 1;
     int AttackA2Damage = 1;
-    int AttackA3Damage = 1;
+    float AttackA1MoveSpeed=2.0f;
+    float AttackA2MoveSpeed=3.0f;
+    bool IsAttackA1Move = false;
+    bool IsAttackA2Move = false;
+    bool IsNextAttackA = false;
 
     ////////공격B
-    int AttackBCombo = 0;
-    int AttackB1Damage = 1;
-    int AttackB2Damage = 1;
-    int AttackB3Damage = 1;
+    
+    int AttackBDamage = 1;
+    float AttackBMoveSpeed=4.0f;
+    bool IsAttackBMove = false;
+    bool IsNextAttackB = false;
+
     // Start is called before the first frame update
 
     // /////// 공격 Spin
@@ -88,7 +92,7 @@ public partial class PlayerScript : MonoBehaviour
         SetAttackASpeed(1.0f);
         SetAttackBSpeed(1.0f);
 
-        SetAttackRange(2);
+        SetAddAttackRange(0);
     }
 
     // Update is called once per frame
@@ -115,7 +119,11 @@ public partial class PlayerScript : MonoBehaviour
 
         SpinUpdate();
 
+        AttackUpdate();
+
         AttackAirUpdate();
+
+        
     }
 
     void MoveKeyCheck()
@@ -176,7 +184,7 @@ public partial class PlayerScript : MonoBehaviour
 
         if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.X))//Spin
         {
-            if (PLAYERSTATE.ATTACKSPIN != State)//2타
+            if (PLAYERSTATE.ATTACKSPIN != State)
             {
                 GValue.PlayerDamage = AttackSpindDamage;
                 Ani.SetTrigger("AttackSpinPre");
@@ -197,49 +205,31 @@ public partial class PlayerScript : MonoBehaviour
                 State = PLAYERSTATE.ATTACKAIR;
                 IsAttackAirReady = false;
             }
-            if (PLAYERSTATE.ATTACKA1 == State)//2타
+
+            if (PLAYERSTATE.ATTACKA1 == State || PLAYERSTATE.ATTACKA2 == State)//A공격 후속타
             {
-                AttackACombo = 1;
-            }
-            if (PLAYERSTATE.ATTACKA2 == State)//3타
-            {
-                AttackACombo = 2;
-            }
-            if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)//1타
-            {
-                if(AttackACombo==0)
-                {
-                    GValue.PlayerDamage = AttackA1Damage;
-                    Ani.SetTrigger("AttackA1");
-                    PrevAniName = "AttackA1";
-                    State = PLAYERSTATE.ATTACKA1;
-                }
+                IsNextAttackA = true;
             }
             
-           
+            if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)//1타
+            {
+
+                GValue.PlayerDamage = AttackA1Damage;
+                Ani.SetTrigger("AttackA1");
+                PrevAniName = "AttackA1";
+                State = PLAYERSTATE.ATTACKA1;
+
+            }
+
+
         }
 
         if (Input.GetKeyDown(KeyCode.X))//공격 키2
         {
-            if (PLAYERSTATE.ATTACKB1 == State)//2타
+            if (PLAYERSTATE.ATTACKA2 == State)//A공격 후속타
             {
-                AttackBCombo = 1;
+                IsNextAttackB = true;
             }
-            if (PLAYERSTATE.ATTACKB2 == State)
-            {
-                AttackBCombo = 2;
-            }
-            if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)//1타
-            {
-                if (AttackBCombo == 0)
-                {
-                    GValue.PlayerDamage = AttackB1Damage;
-                    Ani.SetTrigger("AttackB1");
-                    PrevAniName = "AttackB1";
-                    State = PLAYERSTATE.ATTACKB1;
-                }
-            }
-
 
         }
 
@@ -593,6 +583,30 @@ public partial class PlayerScript : MonoBehaviour
        
     }
 
+    void AttackUpdate()
+    {
+        if(PLAYERSTATE.ATTACKA1 != State && PLAYERSTATE.ATTACKA2 != State && PLAYERSTATE.ATTACKB != State)
+        {
+            return;
+        }
+
+        if(IsAttackA1Move)
+        {
+            Vector3 MoveStep = transform.forward*AttackA1MoveSpeed * Time.deltaTime;
+            CC.Move(MoveStep);
+        }
+        else if (IsAttackA2Move)
+        {
+            Vector3 MoveStep = transform.forward * AttackA2MoveSpeed * Time.deltaTime;
+            CC.Move(MoveStep);
+        }
+        else if (IsAttackBMove)
+        {
+            Vector3 MoveStep = transform.forward * AttackBMoveSpeed * Time.deltaTime;
+            CC.Move(MoveStep);
+        }
+    }
+
     void AttackAirUpdate()
     {
         if (PLAYERSTATE.ATTACKAIR != State)
@@ -673,8 +687,12 @@ public partial class PlayerScript : MonoBehaviour
             Ani.SetTrigger("Hit");
             PrevAniName = "Hit";
 
-            AttackACombo = 0;            
-            AttackBCombo = 0;
+            IsNextAttackA = false;
+            IsNextAttackB = false;
+
+            IsAttackA1Move = false;
+            IsAttackA2Move = false;
+            IsAttackBMove = false;
         }
     }
     void SetAttackASpeed(float speed)
@@ -686,7 +704,7 @@ public partial class PlayerScript : MonoBehaviour
         Ani.SetFloat("AttackBSpeed", speed);
     }
 
-    public void SetAttackRange(float fvalue)
+    public void SetAddAttackRange(float fvalue)
     {
         PlayerAttack.SetActive(true);
         PlayerAttack.GetComponent<PlayerAttackScript>().ColScaling(fvalue);

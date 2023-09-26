@@ -14,6 +14,7 @@ public class PlayerAttackScript : MonoBehaviour
         Col = GetComponent<CapsuleCollider>();
         if (Col == null)
             Debug.Log(null);
+        
     }
     private void OnDisable()
     {
