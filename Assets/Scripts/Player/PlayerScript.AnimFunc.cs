@@ -7,14 +7,27 @@ public partial class PlayerScript : MonoBehaviour
     // Start is called before the first frame update
     ///  ////////////////////////////////// 애니메이션 이벤트 함수
     ///  
+    void TrailOnFunc()
+    {
+        AttackTrail.SetActive(true);
+        AttackTrail.GetComponent<TrailRenderer>().Clear();
+    }
+
+    void TrailOffFunc()
+    {
+        
+        AttackTrail.SetActive(false);
+    }
     void AttackActiveFunc()
     {
         PlayerAttack.SetActive(true);
+       
     }
 
     void AttackDeActiveFunc()
     {
         PlayerAttack.SetActive(false);
+        
     }
 
     void AttackA1MoveFunc()

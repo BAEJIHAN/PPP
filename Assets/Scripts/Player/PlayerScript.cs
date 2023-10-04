@@ -27,6 +27,7 @@ public partial class PlayerScript : MonoBehaviour
 {
 
     public GameObject PlayerAttack;
+    public GameObject AttackTrail;
     Animator Ani;
     CharacterController CC;
     GroundCheckScript GC;
@@ -709,6 +710,13 @@ public partial class PlayerScript : MonoBehaviour
         PlayerAttack.SetActive(true);
         PlayerAttack.GetComponent<PlayerAttackScript>().ColScaling(fvalue);
         PlayerAttack.SetActive(false);
+
+        AttackTrail.SetActive(true);
+        AttackTrail.transform.position+=AttackTrail.transform.up*fvalue;
+        
+        
+        AttackTrail.SetActive(false);
+       
 
     }
 
