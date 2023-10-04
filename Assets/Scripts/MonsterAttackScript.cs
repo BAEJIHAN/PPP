@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterAttack : MonoBehaviour
+public class MonsterAttackScript : MonoBehaviour
 {
+
+    public bool CanHit = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +16,10 @@ public class MonsterAttack : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void OnDisable()
+    {
+        CanHit = true;
     }
 }

@@ -81,6 +81,9 @@ public partial class PlayerScript : MonoBehaviour
     int AttackAirDamage = 1;
     bool IsAttackAirReady = true;
 
+
+
+    int DebugNum = 0;
     private void Awake()
     {
       
@@ -90,8 +93,8 @@ public partial class PlayerScript : MonoBehaviour
     }
     void Start()
     {
-        SetAttackASpeed(1.0f);
-        SetAttackBSpeed(1.0f);
+        SetAttackASpeed(1.5f);
+        SetAttackBSpeed(1.5f);
 
         SetAddAttackRange(0);
     }
@@ -683,6 +686,11 @@ public partial class PlayerScript : MonoBehaviour
         
         if(other.tag=="MonsterAttack" &&!IsRollMove)
         {
+            if (!other.gameObject.GetComponent<MonsterAttackScript>().CanHit)
+                return;
+
+            other.gameObject.GetComponent<MonsterAttackScript>().CanHit = false;
+
             PlayerAttack.SetActive(false);
             State = PLAYERSTATE.HIT;
             Ani.SetTrigger("Hit");
@@ -694,6 +702,11 @@ public partial class PlayerScript : MonoBehaviour
             IsAttackA1Move = false;
             IsAttackA2Move = false;
             IsAttackBMove = false;
+
+            AttackTrail.SetActive(false);
+
+            DebugNum++;
+            SampleMgr.Inst.DText.text = DebugNum.ToString();
         }
     }
     void SetAttackASpeed(float speed)

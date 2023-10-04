@@ -53,7 +53,7 @@ public class MonRootScript : MonoBehaviour
     protected void Update()
     {
        
-        SampleMgr.Inst.DText.text = State.ToString();
+        
         IdleUpdate();
     }
 
