@@ -5,7 +5,7 @@ using UnityEngine;
 public class MonsterAttackScript : MonoBehaviour
 {
 
-    public bool CanHit = true;
+    [HideInInspector]public bool CanHit = true;
     // Start is called before the first frame update
     void Start()
     {

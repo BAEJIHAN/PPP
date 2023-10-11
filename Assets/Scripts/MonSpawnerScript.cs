@@ -31,7 +31,7 @@ public class MonSpawnerScript : MonoBehaviour
         SpawnPosition.x += Random.Range(-2.0f, 2.0f);
         SpawnPosition.z += Random.Range(-2.0f, 2.0f);
 
-        GameObject MonSource = Resources.Load("Prefab/Slime") as GameObject;
+        GameObject MonSource = Resources.Load("Prefab/Monster/OddSlime") as GameObject;
         GameObject MonObj = Instantiate(MonSource);
         MonObj.transform.position = SpawnPosition;
 

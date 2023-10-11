@@ -29,7 +29,7 @@ public class MonRootScript : MonoBehaviour
     GameObject Player;
 
     int HitTime = 0;
-    public bool OnHitReady = true;
+    [HideInInspector]public bool OnHitReady = true;
 
     protected int MaxHP = 10;
     protected int CurHP = 10;
@@ -44,17 +44,19 @@ public class MonRootScript : MonoBehaviour
     {
 
         Player = GameObject.Find("Player");
-        State = MONSTATE.MOVE;
-        Ani.SetTrigger("Move");
-        PreAni = "Move";
+        State = MONSTATE.IDLE;
+        Ani.SetTrigger("Idle");
+        PreAni = "IDLE";
     }
 
     // Update is called once per frame
     protected void Update()
     {
-       
-        
+        SampleMgr.Inst.DText.text = MONSTATE.MOVE.ToString();
+
         IdleUpdate();
+
+  
     }
 
     protected void FixedUpdate()
@@ -69,6 +71,7 @@ public class MonRootScript : MonoBehaviour
 
         if ((Player.transform.position - RB.position).magnitude < AttackDist)
         {
+           
             State = MONSTATE.ATTACK1;
             Ani.SetTrigger("Attack1");
             PreAni = "Attack1";

@@ -706,7 +706,7 @@ public partial class PlayerScript : MonoBehaviour
             AttackTrail.SetActive(false);
 
             DebugNum++;
-            SampleMgr.Inst.DText.text = DebugNum.ToString();
+           
         }
     }
     void SetAttackASpeed(float speed)
