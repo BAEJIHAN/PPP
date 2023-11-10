@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class OddSlimeScript : MonRootScript
+public partial class OddSlimeScript : NormalMonRootScript
 {
 
     void Attack1StartFunc()
@@ -14,17 +14,17 @@ public partial class OddSlimeScript : MonRootScript
     void Attack1EndFunc()
     {
         MonsterAttack.SetActive(false);
-        
-        State = MONSTATE.IDLE;
-        Ani.SetTrigger("Idle");
-        PreAni = "Idle";
-       
+
+        StartCoroutine(IdleCo());
+
     }
 
     void HitEndFunc()
     {
-        State = MONSTATE.IDLE;
-        Ani.SetTrigger("Idle");
-        PreAni = "Idle";
+        if (State == MONSTATE.DEATH)
+        {
+            return;
+        }
+        StartCoroutine(IdleCo());
     }
 }

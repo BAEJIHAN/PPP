@@ -20,10 +20,25 @@ public class PlayerAttackScript : MonoBehaviour
     {
         MonRootScript[] Mons = GameObject.FindObjectsOfType<MonRootScript>();
 
-        for(int i=0; i<Mons.Length; i++)
+        if(Mons.Length > 0)
         {
-            Mons[i].OnHitReady = true;
+            for (int i = 0; i < Mons.Length; i++)
+            {
+                Mons[i].OnHitReady = true;
+            }
         }
+        
+
+        GolemHitColScript[] Cols= GameObject.FindObjectsOfType<GolemHitColScript>();
+
+        if(Cols.Length>0)
+        {
+            for (int i = 0; i < Cols.Length; i++)
+            {
+                Cols[i].OnHitReady = true;
+            }
+        }
+        
     }
 
     public void ColScaling(float _ScaleValue)

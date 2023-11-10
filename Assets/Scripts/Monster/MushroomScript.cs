@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public partial class MushroomScript : MonRootScript
+public partial class MushroomScript : NormalMonRootScript
 {
     // Start is called before the first frame update
     new void Start()
@@ -16,6 +16,7 @@ public partial class MushroomScript : MonRootScript
 
     new void Update()
     {
+        
         base.Update();
     }
 

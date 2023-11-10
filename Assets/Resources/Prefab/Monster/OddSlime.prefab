@@ -501,6 +501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MonsterAttack: {fileID: 1582899028407137270}
+  DropItem: {fileID: 7893203735479846205, guid: aa0686aa11ced77489bcc3fc7b6ab232, type: 3}
   OnHitReady: 1
 --- !u!1001 &9108030435970149604
 PrefabInstance:

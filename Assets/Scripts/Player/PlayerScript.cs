@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.Android;
 
 public enum PLAYERSTATE
 {
@@ -32,6 +32,8 @@ public partial class PlayerScript : MonoBehaviour
     CharacterController CC;
     GroundCheckScript GC;
     PLAYERSTATE State = PLAYERSTATE.IDLE;
+
+    DrakeScript Drake;
 
     float Speed = 4;
     float RotSpeed = 8;
@@ -83,13 +85,13 @@ public partial class PlayerScript : MonoBehaviour
 
 
 
-    int DebugNum = 0;
     private void Awake()
     {
       
         Ani = GetComponent<Animator>();
         CC = gameObject.GetComponent<CharacterController>();
         GC = gameObject.GetComponent<GroundCheckScript>();
+        Drake = gameObject.GetComponentInChildren<DrakeScript>();
     }
     void Start()
     {
@@ -285,6 +287,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)
+                    Drake.SetAni("Move");
             }
 
 
@@ -301,6 +306,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)
+                    Drake.SetAni("Move");
             }
 
 
@@ -317,6 +325,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)
+                    Drake.SetAni("Move");
             }
 
 
@@ -333,6 +344,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)
+                    Drake.SetAni("Move");
             }
 
 
@@ -349,6 +363,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)
+                    Drake.SetAni("Move");
             }
 
 
@@ -365,6 +382,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)
+                    Drake.SetAni("Move");
             }
 
 
@@ -381,6 +401,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)
+                    Drake.SetAni("Move");
             }
 
 
@@ -397,6 +420,11 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+
+                if (Drake != null)                
+                    Drake.SetAni("Move");
+                
+               
             }
 
 
@@ -413,6 +441,11 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("Idle");
                 PrevAniName = "Idle";
                 State = PLAYERSTATE.IDLE;
+
+                if(Drake!=null)                
+                    Drake.SetAni("Idle");
+                
+                
             }
 
         }      
@@ -692,6 +725,9 @@ public partial class PlayerScript : MonoBehaviour
             other.gameObject.GetComponent<MonsterAttackScript>().CanHit = false;
 
             PlayerAttack.SetActive(false);
+            AttackTrail.SetActive(false);
+
+            TakeDamage(0);
             State = PLAYERSTATE.HIT;
             Ani.SetTrigger("Hit");
             PrevAniName = "Hit";
@@ -703,9 +739,9 @@ public partial class PlayerScript : MonoBehaviour
             IsAttackA2Move = false;
             IsAttackBMove = false;
 
-            AttackTrail.SetActive(false);
+            
 
-            DebugNum++;
+            
            
         }
     }
@@ -733,5 +769,38 @@ public partial class PlayerScript : MonoBehaviour
 
     }
 
+    public void SetStomp()
+    {
+        if(!(PLAYERSTATE.ATTACKAIR==State||
+            PLAYERSTATE.JUMPAIR == State||
+            PLAYERSTATE.JUMPDOUBLE == State))
+        {
+            TakeDamage(0);
+
+            PlayerAttack.SetActive(false);
+            AttackTrail.SetActive(false);
+
+            State = PLAYERSTATE.HIT;
+            Ani.SetTrigger("Hit");
+            PrevAniName = "Hit";
+
+            IsNextAttackA = false;
+            IsNextAttackB = false;
+
+            IsAttackA1Move = false;
+            IsAttackA2Move = false;
+            IsAttackBMove = false;
+        }
+    }
+
+    public void TakeDamage(int HDamage)
+    {
+       
+    }
+
+    public PLAYERSTATE GetPlayerState()
+    {
+        return State;
+    }
 
 }
