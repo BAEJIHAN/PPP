@@ -127,17 +127,20 @@ public partial class PlayerScript : MonoBehaviour
     {
         Ani.SetTrigger("AttackSpin");
         PrevAniName = "AttackSpin";
+        IsSpin = true;
     }
 
-    //void AttackSpinOnEnd()
-    //{
-    //    PlayerAttack.SetActive(false);
-    //    Ani.SetTrigger("AttackSpinPost");
-    //    PrevAniName = "AttackSpinPost";
-    //}
+    void AttackSpinOnEnd()
+    {
+       
+        PlayerAttack.SetActive(false);
+        Ani.SetTrigger("AttackSpinPost");
+        PrevAniName = "AttackSpinPost";
+        IsSpin = false;
+    }
 
     void AttackSpinPostEndFunc()
-    {
+    {        
         Ani.SetTrigger("Idle");
         PrevAniName = "Idle";
         State = PLAYERSTATE.IDLE;
@@ -146,7 +149,8 @@ public partial class PlayerScript : MonoBehaviour
     void AttackSmashStartEndFunc()
     {       
 
-        if (Input.GetKey(KeyCode.A))
+        if(IsABtnOn)
+        //if (Input.GetKey(KeyCode.A))
         {
             Ani.SetTrigger("AttackSmashCastingA");
             PrevAniName = "AttackSmashCastingA";
@@ -157,12 +161,14 @@ public partial class PlayerScript : MonoBehaviour
             Ani.SetTrigger("Idle");
             PrevAniName = "Idle";
             State = PLAYERSTATE.IDLE;
+            
         }
     }
 
     void AttackSmashCastingAEndFunc()
     {
-        if(Input.GetKey(KeyCode.A))
+        if (IsABtnOn)
+        //if(Input.GetKey(KeyCode.A))
         {
             Ani.SetTrigger("AttackSmashCastingB");
             PrevAniName = "AttackSmashCastingB";
@@ -172,12 +178,18 @@ public partial class PlayerScript : MonoBehaviour
 
     void AttackSmashCastingBEndFunc()
     {
-        if (Input.GetKey(KeyCode.A))
+        if (IsABtnOn)
+        //    if (Input.GetKey(KeyCode.A))
         {
             Ani.SetTrigger("AttackSmashCastingA");
             PrevAniName = "AttackSmashCastingA";
         }
         
+    }
+
+    void AttackSmasSpawnFunc()
+    {
+        GE.SetAttack();
     }
     void AttackSmashEndFunc()
     {
@@ -250,5 +262,21 @@ public partial class PlayerScript : MonoBehaviour
             State = PLAYERSTATE.JUMPAIR;
         }
 
+    }
+
+    void DefendHitEndFunc()
+    {
+        if(IsDBtnOn)
+        //if(Input.GetKey(KeyCode.D))
+        {
+            Ani.SetTrigger("Defend");
+            PrevAniName = "Defend";
+        }
+        else
+        {
+            Ani.SetTrigger("Idle");
+            PrevAniName = "Idle";
+            State = PLAYERSTATE.IDLE;
+        }
     }
 }

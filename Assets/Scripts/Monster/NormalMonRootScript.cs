@@ -39,7 +39,12 @@ public class NormalMonRootScript : MonRootScript
 
     Vector3 TargetPos;
 
-   
+    Vector3 SpinAttackPos;
+    protected bool IsSpinHit = false;
+    protected float SpinHitSpeed = 5;
+    protected float MaxSpinHitTime=0.1f;
+    protected float CurSpinHitTime = 0;
+
     protected void Awake()
     {
         Ani = GetComponent<Animator>();
@@ -64,7 +69,7 @@ public class NormalMonRootScript : MonRootScript
     // Update is called once per frame
     protected void Update()
     {
-        SampleMgr.Inst.DText.text = State.ToString();
+        
        
         PreAttackUpdate();
     }
@@ -72,6 +77,8 @@ public class NormalMonRootScript : MonRootScript
     protected void FixedUpdate()
     {
         MoveUpdate();
+
+        SpinHitUpdate();
     }
 
     private void OnEnable()
@@ -134,13 +141,7 @@ public class NormalMonRootScript : MonRootScript
          
 
     }
-
-    //void DeathStart()
-    //{
-       
-
-    //    StartCoroutine(DeathCo());
-    //}
+    
     IEnumerator DeathCo()
     {
         CapsuleCollider[] Cols = GetComponentsInChildren<CapsuleCollider>();
@@ -170,13 +171,33 @@ public class NormalMonRootScript : MonRootScript
         
         if (0.0001f > (Quaternion.LookRotation(Dir).eulerAngles-transform.rotation.eulerAngles).magnitude)
         {
-            Debug.Log("PAttack");
+           
             State = MONSTATE.ATTACK1;
             Ani.SetTrigger("Attack1");
             PreAni = "Attack1";
         }
     }
 
+    void SpinHitUpdate()
+    {
+        if (!IsSpinHit)
+        {
+            return;
+        }
+
+        Vector3 Dir = RB.position - SpinAttackPos;
+        Dir.y = 0;
+        Dir.Normalize();
+        Vector3 MoveStep = Dir * Time.deltaTime * SpinHitSpeed;           
+        RB.MovePosition(RB.position + MoveStep);
+
+        CurSpinHitTime += Time.deltaTime;
+        if (CurSpinHitTime>MaxSpinHitTime)
+        {
+            CurSpinHitTime = 0;
+            IsSpinHit = false;
+        }
+    }
    
     void TakeNextAction()
     {
@@ -187,7 +208,7 @@ public class NormalMonRootScript : MonRootScript
         MPos.y = 0;
         if ((PPos - MPos).magnitude < AttackDist)
         {
-            Debug.Log("TAttack");
+           
             State = MONSTATE.ATTACK1;
             Ani.SetTrigger("Attack1");
             PreAni = "Attack1";
@@ -216,20 +237,21 @@ public class NormalMonRootScript : MonRootScript
                 if (ItemSpawnerScript.Inst)
                 {
                     ItemSpawnerScript.Inst.SpawnItem(transform.position);
-                }
-                
-                
+                }              
             }
             else
             {
+                if(other.transform.gameObject.GetComponentInParent<PlayerScript>().IsSpin)
+                {
+                    SpinAttackPos=other.transform.position;
+                    IsSpinHit = true;
+                }
                 State = MONSTATE.HIT;
                 Ani.SetTrigger("Hit");
                 PreAni = "Hit";
             }
 
-
-
-
+            
         }
 
         if(other.tag == "DrakeAttack")
@@ -263,6 +285,32 @@ public class NormalMonRootScript : MonRootScript
             Ani.SetTrigger("Hit");
             PreAni = "Hit";
             other.gameObject.GetComponent<DrakeAttackScript>().StartSetOff();
+        }
+
+        if (other.tag == "SmashAttack")
+        {
+            CurHP -= GValue.PlayerSmashDamage;
+
+            if (CurHP <= 0)
+            {
+                StartCoroutine(DeathCo());
+
+                if (ItemSpawnerScript.Inst)
+                {
+                    ItemSpawnerScript.Inst.SpawnItem(transform.position);
+                }
+
+
+            }
+            else
+            {
+                State = MONSTATE.HIT;
+                Ani.SetTrigger("Hit");
+                PreAni = "Hit";
+            }
+
+           
+            
         }
 
     }

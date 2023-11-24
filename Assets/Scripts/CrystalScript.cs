@@ -40,7 +40,7 @@ public class CrystalScript : MonoBehaviour
         if(other.CompareTag("Player"))
         {
             gameObject.SetActive(false);
-            SampleMgr.Inst.SetExpBar(10);
+           
         }
     }
     void FindPlayer()

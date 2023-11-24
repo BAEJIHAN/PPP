@@ -340,7 +340,7 @@ public partial class GolemScript : BossRootScript
     IEnumerator DeathCo()
     {
         yield return new WaitForSeconds(5.0f);
-        SampleMgr.Inst.IsBoss = false;
+       
         Destroy(gameObject);
     }
 }

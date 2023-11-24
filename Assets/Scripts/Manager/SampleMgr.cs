@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SampleMgr : MonoBehaviour
 {
+
+
     public static SampleMgr Inst=null;
     public GameObject MonSpawner;
     public GameObject Boss;
@@ -17,8 +19,13 @@ public class SampleMgr : MonoBehaviour
     public Button NormalSpawnToggleBtn;
     public Button BossSpawnBtn;
 
+    public GameObject MobileUI;
+    public Button MobileToggleBtn;
+
     bool IsNormalSpawn = true;
-    public bool IsBoss = false;
+    [HideInInspector]public bool IsBoss = false;
+
+    [HideInInspector] public bool IsMobile = false;
     private void Awake()
     {
         Inst = this;
@@ -40,6 +47,9 @@ public class SampleMgr : MonoBehaviour
 
         if(BossSpawnBtn!=null)
             BossSpawnBtn.onClick.AddListener(BossSpawnBtnFunc);
+
+        if (MobileToggleBtn != null)
+            MobileToggleBtn.onClick.AddListener(MobileToggleBtnFunc);
     }
 
     // Update is called once per frame
@@ -102,6 +112,21 @@ public class SampleMgr : MonoBehaviour
         }
     }
 
+    void MobileToggleBtnFunc()
+    {
+        if (IsMobile)
+        {
+            MobileUI.SetActive(false);
+            MobileToggleBtn.GetComponentInChildren<Text>().text = "모바일 UI On";
+        }
+        else
+        {
+            MobileUI.SetActive(true);
+            MobileToggleBtn.GetComponentInChildren<Text>().text = "모바일 UI Off";
+        }
+
+        IsMobile = !IsMobile;
+    }
     void EndLevelUp()
     {
         Time.timeScale = 1.0f;
