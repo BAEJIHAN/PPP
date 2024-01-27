@@ -24,21 +24,18 @@ public partial class GolemScript : BossRootScript
     }
     void RoarEndFunc()
     {
-        State = BMONSTATE.MOVE;
-        Ani.SetTrigger("Move");
-        PreAni = "Move";
+        SetPreAttack();
     }
     
     void AttackEndFunc()
     {
-        State = BMONSTATE.MOVE;
-        Ani.SetTrigger("Move");
-        PreAni = "Move";
+        SetPreAttack();
     }
 
     void JumpStartFunc()
     {
         IsJumping = true;
+        SpawnSmashPos();
     }
 
     void JumpEndFunc()
@@ -49,6 +46,8 @@ public partial class GolemScript : BossRootScript
         PreAni = "Jump2";
         fValue = 0;
         Player.GetComponent<PlayerScript>().SetStomp();
+        Destroy(SmashPosObj);
+        SmashPosObj = null;
     }
 
     void SpawnRockFunc()

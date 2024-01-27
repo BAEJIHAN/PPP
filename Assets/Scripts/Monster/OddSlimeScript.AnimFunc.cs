@@ -7,12 +7,16 @@ public partial class OddSlimeScript : NormalMonRootScript
 
     void Attack1StartFunc()
     {
+        if (MONSTATE.DEATH == State)
+            return;
         MonsterAttack.SetActive(true);
        
     }
 
     void Attack1EndFunc()
     {
+        if (MONSTATE.DEATH == State)
+            return;
         MonsterAttack.SetActive(false);
 
         StartCoroutine(IdleCo());
@@ -20,7 +24,7 @@ public partial class OddSlimeScript : NormalMonRootScript
     }
 
     void HitEndFunc()
-    {
+    {       
         if (State == MONSTATE.DEATH)
         {
             return;

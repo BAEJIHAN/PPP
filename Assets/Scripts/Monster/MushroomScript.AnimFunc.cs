@@ -6,12 +6,16 @@ public partial class MushroomScript : NormalMonRootScript
 {
     void Attack1StartFunc()
     {
+        if (MONSTATE.DEATH == State)
+            return;
         MonsterAttack.SetActive(true);
 
     }
 
     void Attack1EndFunc()
     {
+        if (MONSTATE.DEATH == State)
+            return;
         MonsterAttack.SetActive(false);
     
         StartCoroutine(IdleCo());

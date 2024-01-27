@@ -44,7 +44,7 @@ public partial class PlayerScript : MonoBehaviour
         
         if (IsNextAttackA)
         {
-            GValue.PlayerDamage = AttackA2Damage;
+            
             Ani.SetTrigger("AttackA2");
             PrevAniName = "AttackA2";
             State = PLAYERSTATE.ATTACKA2;
@@ -77,14 +77,14 @@ public partial class PlayerScript : MonoBehaviour
     {
         if(IsNextAttackB)
         {
-            GValue.PlayerDamage = AttackBDamage;
+            
             Ani.SetTrigger("AttackB");
             PrevAniName = "AttackB";
             State = PLAYERSTATE.ATTACKB;
         }
         else if(IsNextAttackA)
         {
-            GValue.PlayerDamage = AttackA1Damage;
+           
             Ani.SetTrigger("AttackA1");
             PrevAniName = "AttackA1";
             State = PLAYERSTATE.ATTACKA1;

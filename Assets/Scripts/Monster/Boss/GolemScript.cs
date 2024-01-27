@@ -24,7 +24,6 @@ public enum BMONSTATE
 */
 public partial class GolemScript : BossRootScript
 {
-    BMONSTATE State;
     
     float Speed = 3;
     float RotSpeed = 10;
@@ -35,34 +34,37 @@ public partial class GolemScript : BossRootScript
     float JumpDist;
     float fValue = 0;
 
-    public GameObject[] HitCols;
+    
     public GameObject RightAttack;
     public GameObject LeftAttack;
     public GameObject RockPos;
     public GameObject GolemRock;
     GameObject tRock;
 
+    public GameObject SmashPos;
+    GameObject SmashPosObj;
+
     bool IsAttack1Rot = false;
     bool IsJumping = false;
 
     Vector3 P1, P2, P3, P4;
 
-    int PreAttackCount = 0;
+    
     Vector3 PreAttackPos = Vector3.zero;
     float PreAttackDist = 0;
     void Awake()
     {
-        Ani = GetComponent<Animator>();
-        RB = GetComponent<Rigidbody>();
+        base.Awake();
     }
     // Start is called before the first frame update
     void Start()
     {
+        base.Start();
         State = BMONSTATE.ROAR;
         PreAni = "Roar";
         MaxHP = 20;
         CurHP = 20;
-        Player = GameObject.Find("Player");
+      
 
     }
 
@@ -98,9 +100,8 @@ public partial class GolemScript : BossRootScript
 
         float AttackRange = (Player.transform.position - transform.position).magnitude;
         if (AttackRange < 5)
-        {
-            
-            PreAttackCount = Random.Range(1, 4);
+        {          
+          
             SetPreAttack();
         }
     }
@@ -125,13 +126,12 @@ public partial class GolemScript : BossRootScript
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Dir), ThrowRotSpeed * Time.deltaTime);
         }
 
-
         if (!IsJumping)
             return;
         float temp = Time.deltaTime / JumpDist;
 
         fValue += temp * JumpSpeed;
-        //fValue += Time.deltaTime*JumpSpeed;
+       
 
         transform.position = MMath.Lerp(P1, P2, P3, P4, fValue);
 
@@ -163,61 +163,50 @@ public partial class GolemScript : BossRootScript
        
         if (PreAttackDist < 0.1f)
         {
-            PreAttackCount--;
-            if(PreAttackCount <= 0)
-            {
-                TakeNextAction();
-            }
-            else
-            {
-                SetPreAttack();
-            }
-        }
-    }
-    public void GolemHit()
-    {
-
-
-        for (int i = 0; i < HitCols.Length; i++)
-        {
-            HitCols[i].GetComponent<GolemHitColScript>().OnHitReady = false;
+           
+             TakeNextAction();
+           
         }
     }
 
 
 
+
+    /// ///////////
+    //attack1 돌 던지기
+    //attack2 정권 찌르기
+    //attack3 후리기
+    //attack4 후리기 길게 
+    //attack5 점프
+    
     void TakeNextAction()
     {
         Vector3 temp = Player.transform.position;
         temp.y = 0;
         float PBDist = (transform.position - temp).magnitude;
         int Ran = -1;
-        if (5< PBDist && PBDist<10 )
+        
+        if(PBDist<4)//가까울 떄
         {
-            Ran = Random.Range(0, 2);
+            Ran=Random.Range(0, 4);
         }
         else
         {
-            Ran = Random.Range(2, 4);
+            Ran = Random.Range(4, 8);
         }
-        
 
-        //Ran = 4;
+       
 
-        if (Ran == 0)
+        if (Ran == 0 || Ran==4)
         {
-            State = BMONSTATE.ATTACK1;
-            Ani.SetTrigger("Attack1");
-            PreAni = "Attack1";
+            SetPreAttack();
         }
         else if (Ran == 1)
         {
-            State = BMONSTATE.JUMP1;
-            Ani.SetTrigger("Jump1");
-            PreAni = "Jump1";
-            SetJumpPos();
-
-          
+            State = BMONSTATE.ATTACK4;
+            Ani.SetTrigger("Attack4");
+            PreAni = "Attack4"; 
+                   
         }
         else if (Ran == 2)
         {
@@ -231,13 +220,21 @@ public partial class GolemScript : BossRootScript
             State = BMONSTATE.ATTACK3;
             Ani.SetTrigger("Attack3");
             PreAni = "Attack3";
-        }
-        else if (Ran == 4)
+        }//////////가까울 떄
+        else if (Ran == 5 || Ran == 6)/////멀 때
         {
 
-            State = BMONSTATE.ATTACK4;
-            Ani.SetTrigger("Attack4");
-            PreAni = "Attack4";
+            State = BMONSTATE.ATTACK1;
+            Ani.SetTrigger("Attack1");
+            PreAni = "Attack1";
+
+        }
+        else if(Ran == 7)
+        {
+            State = BMONSTATE.JUMP1;
+            Ani.SetTrigger("Jump1");
+            PreAni = "Jump1";
+            SetJumpPos();
         }
         else
         {
@@ -248,27 +245,15 @@ public partial class GolemScript : BossRootScript
     void SetPreAttack()
     {
         State = BMONSTATE.PREATTACK;
+        Ani.SetTrigger("Move");
+        PreAni = "Move";
+
         PreAttackPos = Player.transform.position;
         PreAttackPos.y = 0;
-        if(Random.Range(0, 2)==0)
-        {
-            PreAttackPos.x = Random.Range(-4.0f, -1.0f);
-        }
-        else
-        {
-            PreAttackPos.x = Random.Range(1.0f, 4.0f);
-        }
-        if (Random.Range(0, 2) == 0)
-        {
-            PreAttackPos.z = Random.Range(-4.0f, -1.0f);
-        }
-        else
-        {
-            PreAttackPos.z = Random.Range(1.0f, 4.0f);
-        }
-       
-       
 
+        PreAttackPos.x = Random.Range(-5.0f, 5.0f);
+        PreAttackPos.z = Random.Range(-5.0f, 5.0f);         
+       
         PreAttackDist = (PreAttackPos - transform.position).magnitude;
     }
     void SetJumpPos()
@@ -307,9 +292,11 @@ public partial class GolemScript : BossRootScript
         JumpDist = (P4 - P1).magnitude;
     }
 
-    public void TakeDamage(int HDamage)
+    override public void TakeDamage(int HDamage)
     {
-        Debug.Log(CurHP);
+        if (BMONSTATE.JUMP1 == State)
+            return;
+        
         CurHP -= HDamage;
         if (CurHP < 0)
         {
@@ -320,7 +307,9 @@ public partial class GolemScript : BossRootScript
             }
             RightAttack.SetActive(false);
             LeftAttack.SetActive(false);
-
+            
+            Destroy(SmashPosObj);
+            SmashPosObj = null;
             State = BMONSTATE.DEATH;
             Ani.SetTrigger("Death");
             PreAni = "Death";
@@ -339,8 +328,18 @@ public partial class GolemScript : BossRootScript
 
     IEnumerator DeathCo()
     {
+        ItemSpawnerScript.Inst.BossSpawnItem(transform.position);
+        SampleMgr.Inst.IsBoss = false;
         yield return new WaitForSeconds(5.0f);
        
         Destroy(gameObject);
+    }
+
+    void SpawnSmashPos()
+    {
+        SmashPosObj=Instantiate(SmashPos);        
+        Vector3 tempV = P4;
+        tempV.y = 0.01f;
+        SmashPosObj.transform.position = tempV;
     }
 }

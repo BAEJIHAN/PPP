@@ -9,6 +9,7 @@ TagManager:
   - PlayerAttack
   - DrakeAttack
   - SmashAttack
+  - NormalMonster
   layers:
   - Default
   - TransparentFX
@@ -23,7 +24,7 @@ TagManager:
   - MonsterAttack
   - Item
   - GroundEffect
-  - 
+  - BossMonster
   - 
   - 
   - 

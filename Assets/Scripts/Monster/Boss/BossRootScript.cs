@@ -17,15 +17,28 @@ public enum BMONSTATE
     ATTACK3,
     ATTACK4,
     ATTACK5,
+    ATTACK6,
     JUMP1,
     JUMP2,
+    TAKEOFF,
+    FLY,
+    LAND,
+    RUN,
 }
 public class BossRootScript : MonRootScript
 {
+
+
+    protected BMONSTATE State;
+    public GameObject[] HitCols;
     // Start is called before the first frame update
-    void Start()
+    protected void Awake()
     {
-        
+        Ani = GetComponent<Animator>();
+    }
+    protected void Start()
+    {
+        Player = GameObject.Find("Player");
     }
 
     // Update is called once per frame
@@ -34,5 +47,18 @@ public class BossRootScript : MonRootScript
         
     }
 
+    public void Hit()
+    {
 
+
+        for (int i = 0; i < HitCols.Length; i++)
+        {
+            HitCols[i].GetComponent<BossHitColScript>().OnHitReady = false;
+        }
+    }
+
+    public virtual void TakeDamage(int HDamage)
+    {
+
+    }
 }

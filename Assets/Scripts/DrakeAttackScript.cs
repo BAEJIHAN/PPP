@@ -22,19 +22,39 @@ public class DrakeAttackScript : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (Target == null)
+            return;
+
+
+       
+
         Vector3 Dir = Target.transform.position - transform.position;
         Dir.Normalize();
 
         transform.position += Dir * Time.deltaTime * Speed;
 
-        if (Target.GetComponent<NormalMonRootScript>().IsDead)
+        if(!Target.GetComponent<MonRootScript>())
+        {
+
+        }
+        else if (Target.GetComponent<MonRootScript>().IsDead)
+        {
             gameObject.SetActive(false);
+        }
+            
     }
 
     private void OnDisable()
     {
         StopCoroutine(SetOff());
         IsCol = false;
+    }
+
+    private void OnEnable()
+    {
+        StopCoroutine(SetOff());
+        IsCol = false;
+        
     }
     public void SetTarget(GameObject target)
     {

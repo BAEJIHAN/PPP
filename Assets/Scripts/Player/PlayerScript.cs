@@ -24,6 +24,7 @@ public enum PLAYERSTATE
     ATTACKAIR,
     DEFEND,
     HIT,
+    DEATH
 }
 public partial class PlayerScript : MonoBehaviour
 {
@@ -83,7 +84,9 @@ public partial class PlayerScript : MonoBehaviour
     float CurSpinTime = 0;
     float MaxSpinTime = 1.0f;
     int AttackSpindDamage = 1;
-    public bool IsSpin = false;
+    [HideInInspector]public bool IsSpin = false;
+    [HideInInspector] public float SpinCool = 0;
+    bool IsSpinCoolOn=false;
 
     //공격 Air
     int AttackAirDamage = 1;
@@ -113,16 +116,15 @@ public partial class PlayerScript : MonoBehaviour
     }
     void Start()
     {
-        SetAttackASpeed(1.5f);
-        SetAttackBSpeed(1.5f);
+        SetAttackSpeed();
 
-        SetAddAttackRange(0);
+        SetAttackRange();
     }
 
     // Update is called once per frame
     void Update()
     {
-        DebugUpdate();              
+        //DebugUpdate();              
 
         PressedKey = 0;
 
@@ -131,6 +133,8 @@ public partial class PlayerScript : MonoBehaviour
         KeyCheck();
 
         SmashCastingUpdate();
+
+        SpinCoolUpdate();
     }
 
     private void FixedUpdate()
@@ -154,6 +158,8 @@ public partial class PlayerScript : MonoBehaviour
 
     void MoveKeyCheck()
     {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
 
         if (Input.GetKey(KeyCode.RightArrow))//오른쪽 키
         {
@@ -179,7 +185,9 @@ public partial class PlayerScript : MonoBehaviour
     }
 
     void KeyCheck()
-    {       
+    {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
 
         if(Input.GetKeyDown(KeyCode.D))
         {
@@ -224,11 +232,15 @@ public partial class PlayerScript : MonoBehaviour
         }
 
 
-            if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.X))//Spin
+        if (Input.GetKey(KeyCode.Z) && Input.GetKey(KeyCode.X) && !IsSpinCoolOn)//Spin
         {
             if (PLAYERSTATE.MOVE == State || PLAYERSTATE.IDLE == State)
-            {                
-                GValue.PlayerDamage = AttackSpindDamage;
+            {
+                IsSpinCoolOn = true;
+                SpinCool = GValue.MaxSpinCool;
+                SampleMgr.Inst.SpinCool.SetActive(true);
+
+                
                 Ani.SetTrigger("AttackSpinPre");
                 PrevAniName = "AttackSpinPre";
                 State = PLAYERSTATE.ATTACKSPIN;
@@ -242,7 +254,7 @@ public partial class PlayerScript : MonoBehaviour
             if((PLAYERSTATE.JUMPAIR == State|| PLAYERSTATE.JUMPDOUBLE == State)//점프 공격
                 && IsAttackAirReady)
             {
-                GValue.PlayerDamage = AttackAirDamage;
+                
                 Ani.SetTrigger("AttackAir");
                 PrevAniName = "AttackAir";
                 State = PLAYERSTATE.ATTACKAIR;
@@ -257,7 +269,7 @@ public partial class PlayerScript : MonoBehaviour
             if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)//1타
             {
 
-                GValue.PlayerDamage = AttackA1Damage;
+                
                 Ani.SetTrigger("AttackA1");
                 PrevAniName = "AttackA1";
                 State = PLAYERSTATE.ATTACKA1;
@@ -816,6 +828,28 @@ public partial class PlayerScript : MonoBehaviour
         }
     }
 
+    void SpinCoolUpdate()
+    {
+        if (!IsSpinCoolOn)
+            return;
+
+
+        if (SpinCool>0)
+        {
+            SpinCool -= Time.deltaTime;
+            int Cool = (int)SpinCool;
+            SampleMgr.Inst.SpinCoolText.text = Cool.ToString();
+            SampleMgr.Inst.SpinBlur.fillAmount = SpinCool / GValue.MaxSpinCool;
+            if (SpinCool<=0)
+            {
+                SampleMgr.Inst.SpinCoolText.text = "";
+                SampleMgr.Inst.SpinBlur.fillAmount = 1;
+                SampleMgr.Inst.SpinCool.SetActive(false);
+                IsSpinCoolOn = false;
+            }    
+        }
+    }
+
     public void SetJoyStickMv(float _JoyMvLen, Vector3 _JoyMvDir)
     {
         JoyMvLen = _JoyMvLen;
@@ -827,6 +861,11 @@ public partial class PlayerScript : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
+        if(PLAYERSTATE.DEATH==State)
+        {
+            return;
+        }
+
         if ((other.tag == "MonsterAttack") && (PLAYERSTATE.DEFEND == State))
         {
             other.gameObject.GetComponent<MonsterAttackScript>().CanHit = false;
@@ -834,14 +873,12 @@ public partial class PlayerScript : MonoBehaviour
             if (!IsDefended(other.gameObject.transform.position))
             {
                 PlayerAttack.SetActive(false);
-                AttackTrail.SetActive(false);
-
-                TakeDamage(0);
-
+                AttackTrail.SetActive(false);               
 
                 State = PLAYERSTATE.HIT;
                 Ani.SetTrigger("Hit");
                 PrevAniName = "Hit";
+               
 
                 IsNextAttackA = false;
                 IsNextAttackB = false;
@@ -851,12 +888,23 @@ public partial class PlayerScript : MonoBehaviour
                 IsAttackBMove = false;
 
                 SmashAttack.SetActive(false);
+
+                TakeDamage(other.gameObject.GetComponent<MonsterAttackScript>().Damage);
+
+                if (GValue.CurPlayerHP <= 0)
+                {
+                    SetDeath();
+                    return;
+                }
             }
             else
             {
                 Ani.SetTrigger("DefendHit");
                 PrevAniName = "DefendHit";
-                
+                Vector3 collisionPoint = other.ClosestPointOnBounds(transform.position);
+                EffectSpawnerScript.Inst.SpawnGuardEffect(collisionPoint);
+                EffectSpawnerScript.Inst.SpawnDamageGuard(transform.position);
+
             }
             return;
         }
@@ -871,7 +919,7 @@ public partial class PlayerScript : MonoBehaviour
             PlayerAttack.SetActive(false);
             AttackTrail.SetActive(false);
 
-            TakeDamage(0);
+            TakeDamage(other.gameObject.GetComponent<MonsterAttackScript>().Damage);
             
             if (State==PLAYERSTATE.ATTACKSMASHCASTING || State == PLAYERSTATE.ATTACKSMASH)
             {
@@ -890,27 +938,34 @@ public partial class PlayerScript : MonoBehaviour
             IsAttackBMove = false;
 
             SmashAttack.SetActive(false);
+
+            if(GValue.CurPlayerHP<=0)
+            {
+                SetDeath();
+                return;
+            }
         }
 
        
     }
-    void SetAttackASpeed(float speed)
+    public void SetAttackSpeed()
     {
-        Ani.SetFloat("AttackASpeed", speed);
+        Ani.SetFloat("AttackASpeed", GValue.PlayerAttackSpeed);
+        Ani.SetFloat("AttackBSpeed", GValue.PlayerAttackSpeed);
     }
-    void SetAttackBSpeed(float speed)
-    {
-        Ani.SetFloat("AttackBSpeed", speed);
-    }
+    
 
-    public void SetAddAttackRange(float fvalue)
+    public void SetAttackRange()
     {
+        float AddValue = 0;        
+        AddValue = GValue.PlayerAttackRange;
+
         PlayerAttack.SetActive(true);
-        PlayerAttack.GetComponent<PlayerAttackScript>().ColScaling(fvalue);
+        PlayerAttack.GetComponent<PlayerAttackScript>().ColScaling(AddValue);
         PlayerAttack.SetActive(false);
 
         AttackTrail.SetActive(true);
-        AttackTrail.transform.position+=AttackTrail.transform.up*fvalue;
+        AttackTrail.transform.position+=AttackTrail.transform.up* AddValue;
         
         
         AttackTrail.SetActive(false);
@@ -924,7 +979,7 @@ public partial class PlayerScript : MonoBehaviour
             PLAYERSTATE.JUMPAIR == State||
             PLAYERSTATE.JUMPDOUBLE == State))
         {
-            TakeDamage(0);
+            TakeDamage(3);
 
             PlayerAttack.SetActive(false);
             AttackTrail.SetActive(false);
@@ -944,7 +999,9 @@ public partial class PlayerScript : MonoBehaviour
 
     public void TakeDamage(int HDamage)
     {
-       
+        GValue.CurPlayerHP -= HDamage;
+        EffectSpawnerScript.Inst.SpawnDamageText(transform.position, HDamage, Color.white);
+        SampleMgr.Inst.SetHpBar();
     }
 
     public PLAYERSTATE GetPlayerState()
@@ -961,9 +1018,7 @@ public partial class PlayerScript : MonoBehaviour
 
         float DotResult=Vector3.Dot(Dir, transform.forward);
 
-        //SampleMgr.Inst.DText.text ="몬스터 방향 벡터 " + Dir.ToString()
-        //   + "\n정면 방향 벡터" + transform.forward.ToString()
-        //    + "\n내적 값" + DotResult.ToString();
+      
 
         if (DotResult >= 0.5)
             return true;
@@ -973,6 +1028,30 @@ public partial class PlayerScript : MonoBehaviour
 
         
     }
+
+    void SetDeath()
+    {
+        State = PLAYERSTATE.DEATH;
+        Ani.SetTrigger("Death");
+        PrevAniName = "Death";
+
+        IsDoubleJumped = false;                
+        IsRollMove = false;
+
+        AttackTrail.SetActive(false);
+        SmashAttack.SetActive(false);
+
+        Invoke("DeathWindowOn", 3.0f);
+        
+    }
+
+    void DeathWindowOn()
+    {
+        SampleMgr.Inst.GameOverFunc();
+    }
+
+    #region Mobbile
+    /// 모바일 연동
 
     public void ABtnDown()
     {
@@ -1019,11 +1098,15 @@ public partial class PlayerScript : MonoBehaviour
     {
         IsZBtnOn = true;
 
-        if (IsZBtnOn && IsXBtnOn)//Spin
+        if (IsZBtnOn && IsXBtnOn && !IsSpinCoolOn)//Spin
         {
             if (PLAYERSTATE.MOVE == State || PLAYERSTATE.IDLE == State)
             {
-                GValue.PlayerDamage = AttackSpindDamage;
+                IsSpinCoolOn = true;
+                SpinCool = GValue.MaxSpinCool;
+                SampleMgr.Inst.SpinCool.SetActive(true);
+
+                
                 Ani.SetTrigger("AttackSpinPre");
                 PrevAniName = "AttackSpinPre";
                 State = PLAYERSTATE.ATTACKSPIN;
@@ -1037,7 +1120,7 @@ public partial class PlayerScript : MonoBehaviour
         if ((PLAYERSTATE.JUMPAIR == State || PLAYERSTATE.JUMPDOUBLE == State)//점프 공격
                 && IsAttackAirReady)
         {
-            GValue.PlayerDamage = AttackAirDamage;
+           
             Ani.SetTrigger("AttackAir");
             PrevAniName = "AttackAir";
             State = PLAYERSTATE.ATTACKAIR;
@@ -1052,7 +1135,7 @@ public partial class PlayerScript : MonoBehaviour
         if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)//1타
         {
 
-            GValue.PlayerDamage = AttackA1Damage;
+            
             Ani.SetTrigger("AttackA1");
             PrevAniName = "AttackA1";
             State = PLAYERSTATE.ATTACKA1;
@@ -1067,11 +1150,15 @@ public partial class PlayerScript : MonoBehaviour
     public void XBtnDown()
     {
         IsXBtnOn = true;
-        if (IsZBtnOn && IsXBtnOn)//Spin
+        if (IsZBtnOn && IsXBtnOn && !IsSpinCoolOn)//Spin
         {
             if (PLAYERSTATE.MOVE == State || PLAYERSTATE.IDLE == State)
             {
-                GValue.PlayerDamage = AttackSpindDamage;
+                IsSpinCoolOn = true;
+                SpinCool = GValue.MaxSpinCool;
+                SampleMgr.Inst.SpinCool.SetActive(true);
+
+                
                 Ani.SetTrigger("AttackSpinPre");
                 PrevAniName = "AttackSpinPre";
                 State = PLAYERSTATE.ATTACKSPIN;
@@ -1129,6 +1216,7 @@ public partial class PlayerScript : MonoBehaviour
         }
     }
 
+    #endregion
     void DebugUpdate()
     {
         SampleMgr.Inst.DText.text = "PreAni " + PrevAniName

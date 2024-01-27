@@ -45,6 +45,9 @@ public class NormalMonRootScript : MonRootScript
     protected float MaxSpinHitTime=0.1f;
     protected float CurSpinHitTime = 0;
 
+    float PreAttackTime;
+
+    bool IsOnEvent = false;
     protected void Awake()
     {
         Ani = GetComponent<Animator>();
@@ -63,7 +66,7 @@ public class NormalMonRootScript : MonRootScript
         MaxHP = 3;
         CurHP = 3;
 
-        
+        PreAttackTime = Random.Range(0.1f, 0.2f);
     }
 
     // Update is called once per frame
@@ -71,12 +74,14 @@ public class NormalMonRootScript : MonRootScript
     {
         
        
-        PreAttackUpdate();
+       
     }
 
     protected void FixedUpdate()
     {
         MoveUpdate();
+
+        PreAttackUpdate();
 
         SpinHitUpdate();
     }
@@ -106,7 +111,7 @@ public class NormalMonRootScript : MonRootScript
         if (MONSTATE.MOVE != State)
             return;
 
-        if ((Player.transform.position - RB.position).magnitude < AttackDist)
+        if ((Player.transform.position - transform.position).magnitude < AttackDist)
         {
 
             State = MONSTATE.PREATTACK;
@@ -116,12 +121,12 @@ public class NormalMonRootScript : MonRootScript
             return;
         }
 
-        Vector3 Dir = Player.transform.position - RB.position;
+        Vector3 Dir = Player.transform.position - transform.position;
         Dir.y = 0;
         Dir.Normalize();
         Vector3 MoveStep = Speed * Time.deltaTime * Dir;
-        RB.MovePosition(RB.position + MoveStep);
-
+        //RB.MovePosition(RB.position + MoveStep);
+        transform.position += MoveStep;
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Dir), RotSpeed * Time.deltaTime);
 
     }
@@ -153,8 +158,15 @@ public class NormalMonRootScript : MonRootScript
         Ani.SetTrigger("Death");
         PreAni = "Death";
         IsDead = true;
+        GValue.NMonNum--;
+        GValue.KilledMon++;
+        SampleMgr.Inst.SetKillText();
 
-        yield return new WaitForSeconds(MaxDeathTime);
+        if(GValue.KilledMon==15 || GValue.KilledMon == 25)
+        {
+            SampleMgr.Inst.BossSpawnFunc();
+        }
+       yield return new WaitForSeconds(MaxDeathTime);
 
         gameObject.SetActive(false);
     }
@@ -165,17 +177,21 @@ public class NormalMonRootScript : MonRootScript
         if (MONSTATE.PREATTACK != State)
             return;
 
-        Vector3 Dir = TargetPos-RB.position; 
+        
+        Vector3 Dir = TargetPos  - transform.position; 
 
         transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(Dir), RotSpeed * Time.deltaTime);
-        
-        if (0.0001f > (Quaternion.LookRotation(Dir).eulerAngles-transform.rotation.eulerAngles).magnitude)
+
+        PreAttackTime-= Time.deltaTime;
+
+        if(PreAttackTime<0)
         {
-           
+            PreAttackTime = Random.Range(0.1f, 0.2f);
             State = MONSTATE.ATTACK1;
             Ani.SetTrigger("Attack1");
             PreAni = "Attack1";
         }
+      
     }
 
     void SpinHitUpdate()
@@ -185,11 +201,12 @@ public class NormalMonRootScript : MonRootScript
             return;
         }
 
-        Vector3 Dir = RB.position - SpinAttackPos;
+        Vector3 Dir = transform.position - SpinAttackPos;
         Dir.y = 0;
         Dir.Normalize();
-        Vector3 MoveStep = Dir * Time.deltaTime * SpinHitSpeed;           
-        RB.MovePosition(RB.position + MoveStep);
+        Vector3 MoveStep = Dir * Time.deltaTime * SpinHitSpeed;
+        transform.position += MoveStep;
+        
 
         CurSpinHitTime += Time.deltaTime;
         if (CurSpinHitTime>MaxSpinHitTime)
@@ -200,18 +217,27 @@ public class NormalMonRootScript : MonRootScript
     }
    
     void TakeNextAction()
-    {
-        
+    {       
+        if(IsOnEvent)
+        {
+            State = MONSTATE.PREATTACK;
+            Ani.SetTrigger("Idle");
+            PreAni = "Idle";
+            TargetPos = Player.transform.position;
+            return;
+        }
+
         Vector3 PPos = Player.transform.position;
-        Vector3 MPos = RB.position;
+        Vector3 MPos = transform.position;
         PPos.y = 0;
         MPos.y = 0;
         if ((PPos - MPos).magnitude < AttackDist)
         {
-           
-            State = MONSTATE.ATTACK1;
-            Ani.SetTrigger("Attack1");
-            PreAni = "Attack1";
+
+            State = MONSTATE.PREATTACK;
+            Ani.SetTrigger("Idle");
+            PreAni = "Idle";
+            TargetPos = Player.transform.position;
         }
         else
         {
@@ -221,7 +247,19 @@ public class NormalMonRootScript : MonRootScript
         }
     }
 
-    
+    public void EventStart()
+    {
+        State = MONSTATE.IDLE;
+        Ani.SetTrigger("Idle");
+        PreAni = "IDLE";
+        IsOnEvent = true;
+    }
+
+    public void EventEnd()
+    {
+        IsOnEvent = false;
+        TakeNextAction();
+    }
     protected void OnTriggerEnter(Collider other)
     {
 
@@ -230,7 +268,9 @@ public class NormalMonRootScript : MonRootScript
             CurHP -= GValue.PlayerDamage;
             MonsterAttack.SetActive(false);
             OnHitReady = false;
-
+            Vector3 collisionPoint = other.ClosestPointOnBounds(transform.position);
+            EffectSpawnerScript.Inst.SpawnAttackEffect(collisionPoint);
+            EffectSpawnerScript.Inst.SpawnDamageText(collisionPoint, GValue.PlayerDamage, Color.red);
             if (CurHP <= 0)//Á×À½
             {
                 StartCoroutine(DeathCo());
@@ -260,7 +300,9 @@ public class NormalMonRootScript : MonRootScript
                 return;
 
             other.gameObject.GetComponent<DrakeAttackScript>().IsCol = true;
-
+            Vector3 collisionPoint = other.ClosestPointOnBounds(transform.position);
+            EffectSpawnerScript.Inst.SpawnAttackEffect(collisionPoint);
+            EffectSpawnerScript.Inst.SpawnDamageText(collisionPoint, GValue.DrakeDamage, Color.red);
             CurHP -= GValue.DrakeDamage;
 
             if (CurHP <= 0)
@@ -290,7 +332,9 @@ public class NormalMonRootScript : MonRootScript
         if (other.tag == "SmashAttack")
         {
             CurHP -= GValue.PlayerSmashDamage;
-
+            Vector3 collisionPoint = other.ClosestPointOnBounds(transform.position);
+            EffectSpawnerScript.Inst.SpawnAttackEffect(collisionPoint);
+            EffectSpawnerScript.Inst.SpawnDamageText(collisionPoint, GValue.PlayerSmashDamage, Color.red);
             if (CurHP <= 0)
             {
                 StartCoroutine(DeathCo());

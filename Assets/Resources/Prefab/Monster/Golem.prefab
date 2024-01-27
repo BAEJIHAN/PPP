@@ -130,6 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   OnHitReady: 1
+  IsDead: 0
   HitCols:
   - {fileID: 7073827583393317684}
   - {fileID: 1317526941243444824}
@@ -140,6 +141,7 @@ MonoBehaviour:
   LeftAttack: {fileID: 6470958878061613814}
   RockPos: {fileID: 1530190806435858555}
   GolemRock: {fileID: 1375754531036840, guid: 71497ec4178769a4c8cdb38563f01fc0, type: 3}
+  SmashPos: {fileID: 7925142888401731716, guid: ad2d1346ec4a3b24593df0a22ecb0661, type: 3}
 --- !u!1 &1088256926929212
 GameObject:
   m_ObjectHideFlags: 0
@@ -817,7 +819,7 @@ GameObject:
   - component: {fileID: 853020188755303856}
   - component: {fileID: 1120308809253056959}
   - component: {fileID: 3424897904407733453}
-  m_Layer: 9
+  m_Layer: 13
   m_Name: GolemHitColRL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -864,8 +866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80da0418ca4109143be8b8c3cf9a5cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Golem: {fileID: 3972665562515129587}
-  PGolem: {fileID: 1067925524328404}
+  PObj: {fileID: 1067925524328404}
   OnHitReady: 0
 --- !u!1 &1317526941243444824
 GameObject:
@@ -878,7 +879,7 @@ GameObject:
   - component: {fileID: 1317526941243444825}
   - component: {fileID: 1590439719079600726}
   - component: {fileID: 3603219369562453763}
-  m_Layer: 9
+  m_Layer: 13
   m_Name: GolemHitColRA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -925,8 +926,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80da0418ca4109143be8b8c3cf9a5cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Golem: {fileID: 3972665562515129587}
-  PGolem: {fileID: 1067925524328404}
+  PObj: {fileID: 1067925524328404}
   OnHitReady: 0
 --- !u!1 &1530190806435858555
 GameObject:
@@ -969,7 +969,7 @@ GameObject:
   - component: {fileID: 3493858505033097429}
   - component: {fileID: 3757698043789593818}
   - component: {fileID: 7828090104262467410}
-  m_Layer: 9
+  m_Layer: 13
   m_Name: GolemHitColLL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1016,8 +1016,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80da0418ca4109143be8b8c3cf9a5cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Golem: {fileID: 3972665562515129587}
-  PGolem: {fileID: 1067925524328404}
+  PObj: {fileID: 1067925524328404}
   OnHitReady: 0
 --- !u!1 &5006791478386435717
 GameObject:
@@ -1030,7 +1029,7 @@ GameObject:
   - component: {fileID: 5006791478386435716}
   - component: {fileID: 4693060771777006219}
   - component: {fileID: 4959704223884345895}
-  m_Layer: 9
+  m_Layer: 13
   m_Name: GolemHitColC
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1077,8 +1076,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80da0418ca4109143be8b8c3cf9a5cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Golem: {fileID: 3972665562515129587}
-  PGolem: {fileID: 1067925524328404}
+  PObj: {fileID: 1067925524328404}
   OnHitReady: 0
 --- !u!1 &6470958878061613814
 GameObject:
@@ -1091,7 +1089,7 @@ GameObject:
   - component: {fileID: 7842483079315384706}
   - component: {fileID: 95528692868743785}
   - component: {fileID: 1192129080948201195}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: GolemAttackL
   m_TagString: MonsterAttack
   m_Icon: {fileID: 0}
@@ -1139,7 +1137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanHit: 1
-  Damage: 0
+  Damage: 3
 --- !u!1 &7073827583393317684
 GameObject:
   m_ObjectHideFlags: 0
@@ -1151,7 +1149,7 @@ GameObject:
   - component: {fileID: 7073827583393317685}
   - component: {fileID: 7381930921697423162}
   - component: {fileID: 4090624865238178500}
-  m_Layer: 9
+  m_Layer: 13
   m_Name: GolemHitColLA
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1198,8 +1196,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80da0418ca4109143be8b8c3cf9a5cf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Golem: {fileID: 3972665562515129587}
-  PGolem: {fileID: 1067925524328404}
+  PObj: {fileID: 1067925524328404}
   OnHitReady: 0
 --- !u!1 &8593858742860018991
 GameObject:
@@ -1212,7 +1209,7 @@ GameObject:
   - component: {fileID: 2555364382685339732}
   - component: {fileID: 1633169949200258973}
   - component: {fileID: 924442569416619253}
-  m_Layer: 10
+  m_Layer: 13
   m_Name: GolemAttackR
   m_TagString: MonsterAttack
   m_Icon: {fileID: 0}
@@ -1260,4 +1257,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CanHit: 1
-  Damage: 0
+  Damage: 3

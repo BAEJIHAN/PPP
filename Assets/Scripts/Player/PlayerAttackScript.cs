@@ -29,7 +29,7 @@ public class PlayerAttackScript : MonoBehaviour
         }
         
 
-        GolemHitColScript[] Cols= GameObject.FindObjectsOfType<GolemHitColScript>();
+        BossHitColScript[] Cols= GameObject.FindObjectsOfType<BossHitColScript>();
 
         if(Cols.Length>0)
         {

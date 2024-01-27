@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public enum DRAKESTATE
 {
@@ -31,6 +32,9 @@ public partial class DrakeScript : MonoBehaviour
     public GameObject AttackPos;
     public GameObject Fireball;
     GameObject AttackSpawner;
+
+    float CurSearchRate = 0;
+    float SearchRate = 3;
     private void Awake()
     {
         Player = GameObject.Find("Player").GetComponent<PlayerScript>();
@@ -47,32 +51,36 @@ public partial class DrakeScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        AttackUpdate();
+        if (Player.GetPlayerState() == PLAYERSTATE.DEATH)
+            return;
+        CurSearchRate += Time.deltaTime;
+        if(SearchRate< CurSearchRate)
+        {
+            Targets = null;
+            CurSearchRate = 0;
+            Targets = Physics.SphereCastAll(transform.position, Range, Vector3.up, 0, TargetLayer);
+            Attack();
+        }
+       
     }
 
-    private void FixedUpdate()
-    {
-        Targets = Physics.SphereCastAll(transform.position, Range, Vector3.up, 0, TargetLayer);
-    }
+   
 
-    void AttackUpdate()
+    void Attack()
     {
         
-
-
-        CurTarget = SearchTarget();
-        if (CurTarget)
-        {
-            CurAttackRate += Time.deltaTime;
-            if (CurAttackRate > AttackRate)
+            CurTarget = SearchTarget();
+            if (CurTarget)
             {
                 CurAttackRate = 0;
                 Ani.SetTrigger("Attack1");
                 PreAni = "Attack1";
                 State = DRAKESTATE.ATTACK1;
             }
-        }
+
+
+       
+      
     }
     GameObject SearchTarget()
     {
@@ -87,8 +95,15 @@ public partial class DrakeScript : MonoBehaviour
             if(Dist>Vector3.Distance(transform.position, Targets[i].transform.position))               
             {
                 Dist = Vector3.Distance(transform.position, Targets[i].transform.position);
-                if(!Targets[i].transform.gameObject.GetComponent<NormalMonRootScript>().IsDead)
-                    RTarget= Targets[i].transform.gameObject;
+                
+                if(Targets[i].transform.gameObject.GetComponent<MonRootScript>())
+                {
+                    if(!Targets[i].transform.gameObject.GetComponent<MonRootScript>().IsDead)
+                    {
+                        RTarget = Targets[i].transform.gameObject;
+                    }
+                }
+                   
             }
         }
         return RTarget;

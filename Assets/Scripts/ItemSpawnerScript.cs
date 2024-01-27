@@ -6,7 +6,7 @@ public class ItemSpawnerScript : MonoBehaviour
 {
     public static ItemSpawnerScript Inst;
     public GameObject Item1;
-    int MaxItemCount = 50;
+    int MaxItemCount = 70;
     public List<GameObject> ItemPool = new List<GameObject>();
     // Start is called before the first frame update
     private void Awake()
@@ -43,6 +43,24 @@ public class ItemSpawnerScript : MonoBehaviour
                 SpawnPos.y = 0.5f;
                 ItemPool[i].transform.position = SpawnPos;
                 break;
+
+            }
+        }
+    }
+
+    public void BossSpawnItem(Vector3 SpawnPos)
+    {
+        int BossItemCount = 10;
+        for (int i = 0; i < ItemPool.Count; i++)
+        {
+            if (!ItemPool[i].activeSelf)
+            {
+                ItemPool[i].SetActive(true);
+                SpawnPos.y = 3.5f;
+                ItemPool[i].transform.position = SpawnPos;                
+                BossItemCount--;
+                if (BossItemCount <= 0)
+                    break;
 
             }
         }

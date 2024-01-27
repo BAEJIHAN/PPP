@@ -6,7 +6,11 @@ public partial class DrakeScript : MonoBehaviour
 {
     void AttackSpawnFunc()
     {        
-        AttackSpawner.GetComponent<AttackSpawnerScript>().DrakeAttackSpawn(AttackPos.transform.position, CurTarget);
+        if(!CurTarget.GetComponent<NormalMonRootScript>().IsDead)
+        {
+            AttackSpawner.GetComponent<AttackSpawnerScript>().DrakeAttackSpawn(AttackPos.transform.position, CurTarget);
+        }
+        
        
     }
     void Attack1EndFunc()
