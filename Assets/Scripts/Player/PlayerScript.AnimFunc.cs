@@ -128,6 +128,9 @@ public partial class PlayerScript : MonoBehaviour
         Ani.SetTrigger("AttackSpin");
         PrevAniName = "AttackSpin";
         IsSpin = true;
+
+        AClip = Resources.Load<AudioClip>("Sound/Spin");
+        ASource.PlayOneShot(AClip);
     }
 
     void AttackSpinOnEnd()
@@ -190,6 +193,8 @@ public partial class PlayerScript : MonoBehaviour
     void AttackSmasSpawnFunc()
     {
         GE.SetAttack();
+        AClip = Resources.Load<AudioClip>("Sound/Stomp");
+        ASource.PlayOneShot(AClip);
     }
     void AttackSmashEndFunc()
     {

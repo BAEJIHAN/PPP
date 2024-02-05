@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 using UnityEngine.Android;
-using static UnityEngine.AudioSettings;
+
 
 public enum PLAYERSTATE
 {
@@ -28,6 +27,10 @@ public enum PLAYERSTATE
 }
 public partial class PlayerScript : MonoBehaviour
 {
+    public GameObject FootStep;
+    AudioSource ASource;
+    AudioSource FootStepASource;
+    AudioClip AClip;
 
     public GameObject PlayerAttack;
     public GameObject AttackTrail;
@@ -113,6 +116,8 @@ public partial class PlayerScript : MonoBehaviour
         GC = gameObject.GetComponent<GroundCheckScript>();
         Drake = gameObject.GetComponentInChildren<DrakeScript>();
         GE = SmashAttack.GetComponent<GroundEffectScript>();
+        ASource = GetComponent<AudioSource>();
+        FootStepASource=FootStep.GetComponent<AudioSource>();
     }
     void Start()
     {
@@ -139,6 +144,7 @@ public partial class PlayerScript : MonoBehaviour
 
     private void FixedUpdate()
     {
+        
         MoveUpdate();
 
         JoyStickMvUpdate();
@@ -299,6 +305,8 @@ public partial class PlayerScript : MonoBehaviour
                 State = PLAYERSTATE.JUMPAIR;
                 CurJumpVelocity = JumpVelocity;
                 JumpPressedKey = PressedKey;
+                AClip = Resources.Load<AudioClip>("Sound/Jump");
+                ASource.PlayOneShot(AClip);
             }
             else if(PLAYERSTATE.JUMPAIR == State && false==IsDoubleJumped)
             {
@@ -310,6 +318,8 @@ public partial class PlayerScript : MonoBehaviour
                 CurJumpVelocity = JumpVelocity;
                 JumpPressedKey = PressedKey;
                 IsDoubleJumped = true;
+                AClip = Resources.Load<AudioClip>("Sound/Jump");
+                ASource.PlayOneShot(AClip);
             }
         }
 
@@ -318,7 +328,10 @@ public partial class PlayerScript : MonoBehaviour
             Ani.SetTrigger("Roll");
             PrevAniName = "Roll";
             State = PLAYERSTATE.ROLL;
-         
+
+            AClip = Resources.Load<AudioClip>("Sound/Roll");
+            ASource.PlayOneShot(AClip);
+
         }
 
        
@@ -339,6 +352,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -349,6 +363,7 @@ public partial class PlayerScript : MonoBehaviour
             CC.Move(MoveStep);
 
             
+
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.AngleAxis(0f, Vector3.up), RotSpeed * Time.deltaTime);
         }
         else if (PressedKey == 0b00001000)//아래 
@@ -358,6 +373,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -377,6 +393,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -396,6 +413,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -415,6 +433,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -434,6 +453,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -453,6 +473,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -472,6 +493,7 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)                
                     Drake.SetAni("Move");
@@ -494,8 +516,9 @@ public partial class PlayerScript : MonoBehaviour
                 Ani.SetTrigger("Idle");
                 PrevAniName = "Idle";
                 State = PLAYERSTATE.IDLE;
+                FootStepASource.Stop();
 
-                if(Drake!=null)                
+                if (Drake!=null)                
                     Drake.SetAni("Idle");                
                 
             }
@@ -794,7 +817,7 @@ public partial class PlayerScript : MonoBehaviour
             return;
 
 
-            //--- 조이스틱 이동 코드
+        //--- 조이스틱 이동 코드
         if (0.0f < JoyMvLen)
         {
             Vector3 MoveStep = JoyMvDir * Speed * Time.deltaTime;
@@ -804,9 +827,11 @@ public partial class PlayerScript : MonoBehaviour
 
             if (PrevAniName != "MoveF")
             {
+               
                 Ani.SetTrigger("MoveF");
                 PrevAniName = "MoveF";
                 State = PLAYERSTATE.MOVE;
+                FootStepASource.Play();
 
                 if (Drake != null)
                     Drake.SetAni("Move");
@@ -815,12 +840,11 @@ public partial class PlayerScript : MonoBehaviour
         else
         {
             if (PrevAniName != "Idle")
-            {
-
+            {                
                 Ani.SetTrigger("Idle");
                 PrevAniName = "Idle";
                 State = PLAYERSTATE.IDLE;
-
+                FootStepASource.Stop();
                 if (Drake != null)
                     Drake.SetAni("Idle");
 
@@ -866,12 +890,20 @@ public partial class PlayerScript : MonoBehaviour
             return;
         }
 
+        if(other.tag=="Crystal")
+        {
+            AClip = Resources.Load<AudioClip>("Sound/CrystalDeath");
+            ASource.PlayOneShot(AClip);
+        }
+
         if ((other.tag == "MonsterAttack") && (PLAYERSTATE.DEFEND == State))
         {
             other.gameObject.GetComponent<MonsterAttackScript>().CanHit = false;
 
             if (!IsDefended(other.gameObject.transform.position))
             {
+                HitSoundFunc();
+
                 PlayerAttack.SetActive(false);
                 AttackTrail.SetActive(false);               
 
@@ -899,6 +931,7 @@ public partial class PlayerScript : MonoBehaviour
             }
             else
             {
+                DefendSoundFunc();
                 Ani.SetTrigger("DefendHit");
                 PrevAniName = "DefendHit";
                 Vector3 collisionPoint = other.ClosestPointOnBounds(transform.position);
@@ -913,6 +946,9 @@ public partial class PlayerScript : MonoBehaviour
         {
             if (!other.gameObject.GetComponent<MonsterAttackScript>().CanHit)
                 return;
+
+
+            HitSoundFunc();
 
             other.gameObject.GetComponent<MonsterAttackScript>().CanHit = false;
 
@@ -1002,6 +1038,7 @@ public partial class PlayerScript : MonoBehaviour
         GValue.CurPlayerHP -= HDamage;
         EffectSpawnerScript.Inst.SpawnDamageText(transform.position, HDamage, Color.white);
         SampleMgr.Inst.SetHpBar();
+        FootStepASource.Stop();
     }
 
     public PLAYERSTATE GetPlayerState()
@@ -1041,6 +1078,7 @@ public partial class PlayerScript : MonoBehaviour
         AttackTrail.SetActive(false);
         SmashAttack.SetActive(false);
 
+        FootStepASource.Stop();
         Invoke("DeathWindowOn", 3.0f);
         
     }
@@ -1050,7 +1088,40 @@ public partial class PlayerScript : MonoBehaviour
         SampleMgr.Inst.GameOverFunc();
     }
 
-    #region Mobbile
+    #region SoundFunc
+    void AttackSoundFunc()
+    {
+        string temps = "Sound/PAttack" + Random.Range(1, 4).ToString();
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
+    }
+
+    void DefendSoundFunc()
+    {
+        string temps = "Sound/Block" + Random.Range(1, 4).ToString();
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
+    }
+
+    void HitSoundFunc()
+    {
+        string temps = "Sound/PHit" + Random.Range(1, 4).ToString();
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
+    }
+
+    public void FootStepSoundStartFunc()
+    {
+        FootStepASource.Play();
+    }
+
+    public void FootStepSoundEndFunc()
+    {
+        FootStepASource.Stop();
+    }
+    #endregion
+
+    #region Mobile
     /// 모바일 연동
 
     public void ABtnDown()
@@ -1190,6 +1261,9 @@ public partial class PlayerScript : MonoBehaviour
             Ani.SetTrigger("Roll");
             PrevAniName = "Roll";
             State = PLAYERSTATE.ROLL;
+
+            AClip = Resources.Load<AudioClip>("Sound/Roll");
+            ASource.PlayOneShot(AClip);
         }
     }
 
@@ -1202,6 +1276,9 @@ public partial class PlayerScript : MonoBehaviour
             State = PLAYERSTATE.JUMPAIR;
             CurJumpVelocity = JumpVelocity;
             JumpPressedKey = PressedKey;
+
+            AClip = Resources.Load<AudioClip>("Sound/Jump");
+            ASource.PlayOneShot(AClip);
         }
         else if (PLAYERSTATE.JUMPAIR == State && false == IsDoubleJumped)
         {
@@ -1213,13 +1290,16 @@ public partial class PlayerScript : MonoBehaviour
             CurJumpVelocity = JumpVelocity;
             JumpPressedKey = PressedKey;
             IsDoubleJumped = true;
+
+            AClip = Resources.Load<AudioClip>("Sound/Jump");
+            ASource.PlayOneShot(AClip);
         }
     }
 
     #endregion
     void DebugUpdate()
     {
-        SampleMgr.Inst.DText.text = "PreAni " + PrevAniName
-                                    + "\nState " + State;
+        //SampleMgr.Inst.DText.text = "PreAni " + PrevAniName
+        //                            + "\nState " + State;
     }
 }

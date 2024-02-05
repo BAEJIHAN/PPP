@@ -35,6 +35,7 @@ public class BossRootScript : MonRootScript
     protected void Awake()
     {
         Ani = GetComponent<Animator>();
+        ASource=GetComponent<AudioSource>();
     }
     protected void Start()
     {

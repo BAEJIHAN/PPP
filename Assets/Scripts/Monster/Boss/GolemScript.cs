@@ -136,7 +136,10 @@ public partial class GolemScript : BossRootScript
         transform.position = MMath.Lerp(P1, P2, P3, P4, fValue);
 
         if (fValue >= 1.0f)
+        {
             JumpEndFunc();
+        }
+            
 
 
     }
@@ -190,12 +193,16 @@ public partial class GolemScript : BossRootScript
         {
             Ran=Random.Range(0, 4);
         }
-        else
+        else if(4<= PBDist ||  PBDist<= 10)
         {
             Ran = Random.Range(4, 8);
         }
+        else
+        {
+            Ran = 0;
+        }
 
-       
+
 
         if (Ran == 0 || Ran==4)
         {
@@ -296,7 +303,9 @@ public partial class GolemScript : BossRootScript
     {
         if (BMONSTATE.JUMP1 == State)
             return;
-        
+
+        HitSoundFunc();
+
         CurHP -= HDamage;
         if (CurHP < 0)
         {
@@ -341,5 +350,36 @@ public partial class GolemScript : BossRootScript
         Vector3 tempV = P4;
         tempV.y = 0.01f;
         SmashPosObj.transform.position = tempV;
+    }
+
+    void AttackSoundFunc()
+    {
+        string temps = "Sound/GolemAttack" + Random.Range(1, 4).ToString();
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
+    }
+
+    void RoarSoundFunc()
+    {        
+        AClip = Resources.Load<AudioClip>("Sound/GolemRoar");
+        ASource.PlayOneShot(AClip);
+    }
+
+    void StompSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/Stomp");
+        ASource.PlayOneShot(AClip);
+    }
+
+    void DeathSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/GolemDeath");
+        ASource.PlayOneShot(AClip);
+    }
+
+    void HitSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/GolemHit");
+        ASource.PlayOneShot(AClip);
     }
 }

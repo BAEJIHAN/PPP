@@ -19,6 +19,10 @@ public partial class DrakeScript : MonoBehaviour
 
     string PreAni;
 
+    AudioSource ASource;
+    AudioClip AClip;
+
+
     [HideInInspector] public float Range=10;
     public LayerMask TargetLayer;
     [HideInInspector] public RaycastHit[] Targets;
@@ -40,6 +44,7 @@ public partial class DrakeScript : MonoBehaviour
         Player = GameObject.Find("Player").GetComponent<PlayerScript>();
         Ani = GetComponent<Animator>();
         AttackSpawner = GameObject.Find("AttackSpawner");
+        ASource=GetComponent<AudioSource>();
     }
     // Start is called before the first frame update
     void Start()

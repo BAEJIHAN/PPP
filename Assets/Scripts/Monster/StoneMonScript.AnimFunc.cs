@@ -16,18 +16,18 @@ public partial class StoneMonScript : NormalMonRootScript
 
     void Attack1EndFunc()
     {
-       
-           
+        if (MONSTATE.DEATH == State)
+        {
+            return;
+        }
+
         IsAttacking = false;
 
         AttackTime = 0;
 
         MonsterAttack.SetActive(false);
 
-        if (MONSTATE.DEATH == State)
-        {
-            return;
-        }
+       
 
         StartCoroutine(IdleCo());
     }

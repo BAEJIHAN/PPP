@@ -14,6 +14,7 @@ public partial class RedDragonScript : BossRootScript
         {
             Ani.SetTrigger("Run");
             PreAni = "Run";
+            StepSound.Play();
             StartCoroutine(RunEndFunc());
         }
         else
@@ -82,11 +83,13 @@ public partial class RedDragonScript : BossRootScript
         Ani.SetTrigger("FlyIdle");
         PreAni = "FlyIdle";
         State = BMONSTATE.FLY;
+        
     }
 
     void LandEndFunc()
     {
         SetPreAttack();
+        WingSound.Stop();
     }
     void FlyAttackPre()
     {

@@ -48,6 +48,11 @@ public partial class RedDragonScript :  BossRootScript
     public GameObject FireAttackObj2;
     public GameObject Fireball;
     public GameObject FireballPos;
+    public GameObject WingSoundObj;
+    public GameObject StepSoundObj;
+
+    AudioSource WingSound;
+    AudioSource StepSound;
     //FlyAttack
     float CurFlyAttackTime=0;
     float MaxFlyAttackTime=3;
@@ -83,6 +88,9 @@ public partial class RedDragonScript :  BossRootScript
     new  void Awake()
     {
         base.Awake();
+
+        WingSound = WingSoundObj.GetComponent<AudioSource>();
+        StepSound = StepSoundObj.GetComponent<AudioSource>();
     }
 
     new void Start()
@@ -237,6 +245,11 @@ public partial class RedDragonScript :  BossRootScript
             BMONSTATE.LAND == State)
             return;
 
+        AClip = Resources.Load<AudioClip>("Sound/DragonHit");
+        ASource.PlayOneShot(AClip);
+
+        
+
         CurHP -= HDamage;
         if (CurHP < 0)
         {
@@ -245,6 +258,11 @@ public partial class RedDragonScript :  BossRootScript
                 HitCols[i].SetActive(false);
 
             }
+
+            StepSound.Stop();
+
+            AClip = Resources.Load<AudioClip>("Sound/DragonDeath");
+            ASource.PlayOneShot(AClip);
 
             JawAttack.SetActive(false);
             TailAttack1.SetActive(false);
@@ -303,9 +321,7 @@ attack6 ºÒ»Õ±â
                 PreRanNum= RanNum;
                 break;
             }
-        }
-
-
+        }     
 
         if (RanNum==0)
         {
@@ -386,6 +402,7 @@ attack6 ºÒ»Õ±â
 
         yield return new WaitForSeconds(RunTime);
 
+        StepSound.Stop();
 
         DeActiveJawAttack();
         IsRunning = false;
@@ -393,4 +410,42 @@ attack6 ºÒ»Õ±â
         Ani.SetTrigger("Attack2");
         PreAni = "Attack2";
     }
+
+    void JawSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/DragonBite");
+        ASource.PlayOneShot(AClip);
+    }
+
+    void RoarSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/DragonRoar");
+        ASource.PlayOneShot(AClip);
+    }
+
+    void FireSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/DragonFire");
+        ASource.PlayOneShot(AClip);
+    }
+
+    void AirAttackSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/DragonAirAttack");
+        ASource.PlayOneShot(AClip);
+    }
+
+    void WingSoundStartFunc()
+    {
+        WingSound.Play();
+    }
+
+    void TailSoundFunc()
+    {
+        AClip = Resources.Load<AudioClip>("Sound/DragonTailAttack");
+        ASource.PlayOneShot(AClip);
+    }
+
+
+
 }

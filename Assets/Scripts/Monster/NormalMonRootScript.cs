@@ -52,6 +52,7 @@ public class NormalMonRootScript : MonRootScript
     {
         Ani = GetComponent<Animator>();
         RB = GetComponent<Rigidbody>();
+        ASource=GetComponent<AudioSource>();
 
     }
     // Start is called before the first frame update
@@ -134,6 +135,11 @@ public class NormalMonRootScript : MonRootScript
    
     protected IEnumerator IdleCo()
     {
+        if (MONSTATE.DEATH == State)
+        {
+            yield break;
+        }
+        
         State = MONSTATE.IDLE;
         Ani.SetTrigger("Idle");
         PreAni = "Idle";
@@ -142,6 +148,10 @@ public class NormalMonRootScript : MonRootScript
         if(MONSTATE.DEATH!=State)
         {
             TakeNextAction();
+        }
+        else
+        {
+            yield break;
         }
          
 
@@ -154,9 +164,7 @@ public class NormalMonRootScript : MonRootScript
         {
             Cols[i].enabled = false;
         }
-        State = MONSTATE.DEATH;
-        Ani.SetTrigger("Death");
-        PreAni = "Death";
+       
         IsDead = true;
         GValue.NMonNum--;
         GValue.KilledMon++;
@@ -217,8 +225,12 @@ public class NormalMonRootScript : MonRootScript
     }
    
     void TakeNextAction()
-    {       
-        if(IsOnEvent)
+    {
+        if (State==MONSTATE.DEATH)
+        {
+            return;
+        }
+        if (IsOnEvent)
         {
             State = MONSTATE.PREATTACK;
             Ani.SetTrigger("Idle");
@@ -265,6 +277,8 @@ public class NormalMonRootScript : MonRootScript
 
         if (other.tag == "PlayerAttack" && OnHitReady)
         {
+            HitSoundFunc();
+
             CurHP -= GValue.PlayerDamage;
             MonsterAttack.SetActive(false);
             OnHitReady = false;
@@ -273,6 +287,9 @@ public class NormalMonRootScript : MonRootScript
             EffectSpawnerScript.Inst.SpawnDamageText(collisionPoint, GValue.PlayerDamage, Color.red);
             if (CurHP <= 0)//Á×À½
             {
+                State = MONSTATE.DEATH;
+                Ani.SetTrigger("Death");
+                PreAni = "Death";
                 StartCoroutine(DeathCo());
                 if (ItemSpawnerScript.Inst)
                 {
@@ -305,8 +322,15 @@ public class NormalMonRootScript : MonRootScript
             EffectSpawnerScript.Inst.SpawnDamageText(collisionPoint, GValue.DrakeDamage, Color.red);
             CurHP -= GValue.DrakeDamage;
 
+            AClip = Resources.Load<AudioClip>("Sound/DrakeExplosion");
+            ASource.PlayOneShot(AClip);
+
+
             if (CurHP <= 0)
             {
+                State = MONSTATE.DEATH;
+                Ani.SetTrigger("Death");
+                PreAni = "Death";
                 StartCoroutine(DeathCo());
 
                 if (ItemSpawnerScript.Inst)
@@ -323,9 +347,7 @@ public class NormalMonRootScript : MonRootScript
                 PreAni = "Hit";
             }
 
-            State = MONSTATE.HIT;
-            Ani.SetTrigger("Hit");
-            PreAni = "Hit";
+            
             other.gameObject.GetComponent<DrakeAttackScript>().StartSetOff();
         }
 
@@ -337,6 +359,9 @@ public class NormalMonRootScript : MonRootScript
             EffectSpawnerScript.Inst.SpawnDamageText(collisionPoint, GValue.PlayerSmashDamage, Color.red);
             if (CurHP <= 0)
             {
+                State = MONSTATE.DEATH;
+                Ani.SetTrigger("Death");
+                PreAni = "Death";
                 StartCoroutine(DeathCo());
 
                 if (ItemSpawnerScript.Inst)
@@ -356,6 +381,18 @@ public class NormalMonRootScript : MonRootScript
            
             
         }
+
+    }
+
+    void HitSoundFunc()
+    {
+        string temps = "Sound/MHit" + Random.Range(1, 6).ToString();
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
+    }
+
+    protected virtual void AttackSoundFunc()
+    {
 
     }
 }

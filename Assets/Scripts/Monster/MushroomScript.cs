@@ -15,13 +15,20 @@ public partial class MushroomScript : NormalMonRootScript
 
 
     new void Update()
-    {
-        
+    {                     
         base.Update();
     }
 
     new void FixedUpdate()
     {
         base.FixedUpdate();
+    }
+
+
+    protected override void AttackSoundFunc()
+    {
+        string temps = "Sound/MushRoomAttack" + Random.Range(1, 3).ToString();
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
     }
 }

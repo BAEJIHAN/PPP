@@ -14,6 +14,13 @@ public class GolemRockScript : MonoBehaviour
     float RollRotSpeed = 150;
     float Dist;
     Vector3 Dir;
+
+    AudioSource ASource;
+    AudioClip AClip;
+    private void Awake()
+    {
+        ASource = GetComponent<AudioSource>();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -46,9 +53,17 @@ public class GolemRockScript : MonoBehaviour
         Dist -= Time.deltaTime * Speed;
         if (Dist < 0.01f)
         {
+            if(!IsRolling)
+            {
+                AClip = Resources.Load<AudioClip>("Sound/Stone");
+                ASource.PlayOneShot(AClip);
+            }
+
             IsRolling = true;
             IsFlying = false;
             Dir.y = 0;
+
+            
         }
             
     }

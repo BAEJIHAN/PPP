@@ -10,6 +10,8 @@ TagManager:
   - DrakeAttack
   - SmashAttack
   - NormalMonster
+  - Block
+  - Crystal
   layers:
   - Default
   - TransparentFX
@@ -25,8 +27,8 @@ TagManager:
   - Item
   - GroundEffect
   - BossMonster
-  - 
-  - 
+  - MiniMap
+  - Block
   - 
   - 
   - 

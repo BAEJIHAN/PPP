@@ -7,7 +7,7 @@ public class DrakeAttackScript : MonoBehaviour
     // Start is called before the first frame update
     GameObject Target;
     float Speed = 5;
-
+    
     public bool IsCol = false;
     void Start()
     {

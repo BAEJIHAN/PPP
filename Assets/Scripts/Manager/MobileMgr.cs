@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class MobileMgr : MonoBehaviour
 {
+    public static MobileMgr Inst = null;
+
     PlayerScript Player;
     
     [Header("------- JoyStick -------")]
@@ -28,6 +30,10 @@ public class MobileMgr : MonoBehaviour
     public Button CBtn;
     public Button SpaceBtn;
 
+    private void Awake()
+    {
+        Inst= this;
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -287,5 +293,30 @@ public class MobileMgr : MonoBehaviour
     private void DBtnUpFunc()
     {
         Player.DBtnUp();
+    }
+
+    public void MobileInit()
+    {
+        RectTransform TempRectTransform = JoySBack.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(TempRectTransform.anchoredPosition.x, TempRectTransform.anchoredPosition.y+50);
+
+    
+        TempRectTransform = ZBtn.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(TempRectTransform.anchoredPosition.x, TempRectTransform.anchoredPosition.y + 50);
+
+        TempRectTransform = XBtn.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(TempRectTransform.anchoredPosition.x, TempRectTransform.anchoredPosition.y + 50);
+
+        TempRectTransform = ABtn.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(TempRectTransform.anchoredPosition.x, TempRectTransform.anchoredPosition.y + 50);
+
+        TempRectTransform = DBtn.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(TempRectTransform.anchoredPosition.x, TempRectTransform.anchoredPosition.y + 50);
+
+        TempRectTransform = CBtn.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(TempRectTransform.anchoredPosition.x, TempRectTransform.anchoredPosition.y + 50);
+
+        TempRectTransform = SpaceBtn.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(TempRectTransform.anchoredPosition.x, TempRectTransform.anchoredPosition.y + 50);
     }
 }

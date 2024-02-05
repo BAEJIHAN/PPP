@@ -25,9 +25,11 @@ public class CrystalScript : MonoBehaviour
 
 
     bool IsUp = false;
+
   
     private void Awake()
     {
+
         Player = GameObject.Find("Player");
     }
     // Start is called before the first frame update
@@ -96,6 +98,7 @@ public class CrystalScript : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
+            
             IsFalling = true;
             gameObject.SetActive(false);
             SampleMgr.Inst.SetExpBar(10);

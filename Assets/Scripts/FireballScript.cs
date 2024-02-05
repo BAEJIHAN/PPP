@@ -13,6 +13,14 @@ public class FireballScript : MonoBehaviour
     Vector3 TargetPos;
     Vector3 Dir;
     bool IsGrounded = false;
+
+    AudioSource ASource;
+    AudioClip AClip;
+
+    private void Awake()
+    {
+        ASource = GetComponent<AudioSource>();
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -50,6 +58,8 @@ public class FireballScript : MonoBehaviour
 
         if (transform.position.y <= 0)
         {
+            AClip = Resources.Load<AudioClip>("Sound/DragonExplosion");
+            ASource.PlayOneShot(AClip);
             AttackObj.SetActive(false);
             Destroy(FireballRangeObj);
             IsGrounded = true;

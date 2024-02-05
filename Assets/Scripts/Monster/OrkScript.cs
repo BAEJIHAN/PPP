@@ -26,4 +26,11 @@ public partial class OrkScript : NormalMonRootScript
     {
         base.FixedUpdate();
     }
+
+    protected override void AttackSoundFunc()
+    {
+        string temps = "Sound/Axe";
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
+    }
 }

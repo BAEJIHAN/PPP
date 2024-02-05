@@ -48,6 +48,7 @@ public partial class GolemScript : BossRootScript
         Player.GetComponent<PlayerScript>().SetStomp();
         Destroy(SmashPosObj);
         SmashPosObj = null;
+        StompSoundFunc();
     }
 
     void SpawnRockFunc()

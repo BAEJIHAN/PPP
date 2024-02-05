@@ -68,4 +68,11 @@ public partial class StoneMonScript : NormalMonRootScript
 
 
     }
+
+    protected override void AttackSoundFunc()
+    {
+        string temps = "Sound/StoneMonAttack";
+        AClip = Resources.Load<AudioClip>(temps);
+        ASource.PlayOneShot(AClip);
+    }
 }

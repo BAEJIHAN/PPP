@@ -12,6 +12,8 @@ public class MonRootScript : MonoBehaviour
     protected Animator Ani;
     protected Rigidbody RB;
     protected string PreAni;
+    protected AudioSource ASource;
+    protected AudioClip AClip;
 
     protected int MaxHP = 10;
     protected int CurHP = 10;

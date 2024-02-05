@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
 public enum LVUPFUNC
 {
     DAMAGE,
@@ -36,7 +37,10 @@ public class SampleMgr : MonoBehaviour
     
     public Text DText;
     public Image ExpBar;
+    public Image ExpBack;
     public Image HPBar;
+    public Image HPBack;
+    public RawImage Minimap;
     public Text KillNumText;
     public GameObject BossEventUI;
     
@@ -57,7 +61,9 @@ public class SampleMgr : MonoBehaviour
     List<LVFuncValue> LevelUpTextAddValueArr = new List<LVFuncValue>();
     int[] LevelUpIndex = new int[5] { 0, 1, 2, 3, 4};
 
-    [Header("Toggle UI")]
+    [Header("Debug")]
+
+    public GameObject DebugRoot;
     public Button NormalSpawnToggleBtn;
     public Button BossSpawnBtn;
 
@@ -151,7 +157,12 @@ public class SampleMgr : MonoBehaviour
         {
             DeathExitBtn.onClick.AddListener(GameExitBtnFunc);
         }
-        ;
+
+        IsMobileFunc();
+
+#if !UNITY_EDITOR
+DebugRoot.SetActive(false);
+#endif
 
     }
 
@@ -167,6 +178,8 @@ public class SampleMgr : MonoBehaviour
             return;
         GValue.PlayerCurExp += AddExp;
         ExpBar.fillAmount = GValue.PlayerCurExp / GValue.PlayerMaxExp;
+
+        Player.GetComponent<PlayerScript>().FootStepSoundEndFunc();
 
         if (GValue.PlayerCurExp>= GValue.PlayerMaxExp)
         {
@@ -293,6 +306,7 @@ public class SampleMgr : MonoBehaviour
     public void BossEventUIOn()
     {
         BossEventUI.SetActive(true);
+        Player.GetComponent<PlayerScript>().FootStepSoundEndFunc();
     }
     public void BossEventUIOff()
     {
@@ -320,26 +334,36 @@ public class SampleMgr : MonoBehaviour
         LevelUpTextValueArr[0].value = GValue.PlayerDamage;
         LevelUpTextValueArr[1].value = GValue.DrakeDamage; 
         LevelUpTextValueArr[2].value = GValue.PlayerAttackRange; 
-        LevelUpTextValueArr[3].value = GValue.PlayerAttackSpeed; 
+        LevelUpTextValueArr[3].value = GValue.PlayerAttackSpeed;
 
 
 
-        int[] RanIdx=new int[3];
-        int tempRan = -1;
-        for(int i=0; i<3; i++)
-        {
-            while(true)
-            {
-                RanIdx[i] = Random.Range(0, 4);
-                if(RanIdx[i]!=tempRan)
-                {
-                    tempRan = RanIdx[i];
-                    break;
-                }
-            }
-            
-        }
+        //int[] RanIdx=new int[3];
+        //int tempRan = -1;
+        //for(int i=0; i<3; i++)
+        //{
+        //    while(true)
+        //    {
+        //        RanIdx[i] = Random.Range(0, 4);
+        //        if(RanIdx[i]!=tempRan)
+        //        {
+        //            tempRan = RanIdx[i];
+        //            break;
+        //        }
+        //    }
+
+        //}
+        int[] RanIdx = new int[] { 0, 1, 2, 3 };
         
+        for(int i=0; i < RanIdx.Length; i++)
+        {
+            int ran1 = Random.Range(0, RanIdx.Length);
+            int ran2 = Random.Range(0, RanIdx.Length);
+            int temp = RanIdx[ran2];
+            RanIdx[ran2] = RanIdx[ran1];
+            RanIdx[ran1]=temp;
+        }
+
         LevelUpDel1 = LevelUpFuncArr[RanIdx[0]];
         LevelUpDel2 = LevelUpFuncArr[RanIdx[1]];
         LevelUpDel3 = LevelUpFuncArr[RanIdx[2]];
@@ -383,6 +407,35 @@ public class SampleMgr : MonoBehaviour
     public void GameOverFunc()
     {
         DeathWindow.SetActive(true);
+    }
+
+    void IsMobileFunc()
+    {
+#if (UNITY_IPHONE || UNITY_ANDROID)
+
+    MobileUI.SetActive(true);
+        IsMobile = true;
+        RectTransform TempRectTransform = ManualOpenBtn.GetComponent<RectTransform>();      
+        TempRectTransform.anchoredPosition = new Vector2(0, TempRectTransform.anchoredPosition.y);
+
+        TempRectTransform=HPBar.GetComponent<RectTransform>();
+        TempRectTransform.sizeDelta = new Vector2(1520, TempRectTransform.sizeDelta.y);
+
+        TempRectTransform = HPBack.GetComponent<RectTransform>();
+        TempRectTransform.sizeDelta = new Vector2(1520, TempRectTransform.sizeDelta.y);
+
+        TempRectTransform = ExpBar.GetComponent<RectTransform>();
+        TempRectTransform.sizeDelta = new Vector2(1520, TempRectTransform.sizeDelta.y);
+
+        TempRectTransform = ExpBack.GetComponent<RectTransform>();
+        TempRectTransform.sizeDelta = new Vector2(1520, TempRectTransform.sizeDelta.y);
+
+        TempRectTransform = Minimap.GetComponent<RectTransform>();
+        TempRectTransform.anchoredPosition = new Vector2(-685, TempRectTransform.anchoredPosition.y);
+        MobileMgr.Inst.MobileInit();
+
+
+#endif
     }
 
     //////////////////////////////////
