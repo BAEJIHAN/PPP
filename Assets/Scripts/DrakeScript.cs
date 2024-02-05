@@ -74,18 +74,19 @@ public partial class DrakeScript : MonoBehaviour
     void Attack()
     {
         
+        if (SearchTarget()==null)
+        {
+            return;
+        }
+        else
+        {
             CurTarget = SearchTarget();
-            if (CurTarget)
-            {
-                CurAttackRate = 0;
-                Ani.SetTrigger("Attack1");
-                PreAni = "Attack1";
-                State = DRAKESTATE.ATTACK1;
-            }
+            CurAttackRate = 0;
+            Ani.SetTrigger("Attack1");
+            PreAni = "Attack1";
+            State = DRAKESTATE.ATTACK1;
+        }         
 
-
-       
-      
     }
     GameObject SearchTarget()
     {

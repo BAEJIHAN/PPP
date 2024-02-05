@@ -89,6 +89,7 @@ public class NormalMonRootScript : MonRootScript
 
     private void OnEnable()
     {
+        IsDead = false;
         StartCoroutine(IdleCo());
     }
     private void OnDisable()
@@ -135,6 +136,7 @@ public class NormalMonRootScript : MonRootScript
    
     protected IEnumerator IdleCo()
     {
+        
         if (MONSTATE.DEATH == State)
         {
             yield break;
@@ -261,6 +263,8 @@ public class NormalMonRootScript : MonRootScript
 
     public void EventStart()
     {
+        if (IsDead)
+            return;
         State = MONSTATE.IDLE;
         Ani.SetTrigger("Idle");
         PreAni = "IDLE";
@@ -269,6 +273,8 @@ public class NormalMonRootScript : MonRootScript
 
     public void EventEnd()
     {
+        if (IsDead)
+            return;
         IsOnEvent = false;
         TakeNextAction();
     }
@@ -348,7 +354,7 @@ public class NormalMonRootScript : MonRootScript
             }
 
             
-            other.gameObject.GetComponent<DrakeAttackScript>().StartSetOff();
+            other.gameObject.GetComponent<DrakeAttackScript>().StartDeath();
         }
 
         if (other.tag == "SmashAttack")

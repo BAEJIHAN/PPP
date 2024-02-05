@@ -189,13 +189,13 @@ public partial class GolemScript : BossRootScript
         float PBDist = (transform.position - temp).magnitude;
         int Ran = -1;
         
-        if(PBDist<4)//가까울 떄
+        if(PBDist<3)//가까울 떄
         {
-            Ran=Random.Range(0, 4);
+            Ran=Random.Range(0, 4);//0, 1, 2, 3
         }
-        else if(4<= PBDist ||  PBDist<= 10)
+        else if(3<= PBDist ||  PBDist<= 6)
         {
-            Ran = Random.Range(4, 8);
+            Ran = Random.Range(4, 8);//4, 5, 6, 7
         }
         else
         {

@@ -22,6 +22,7 @@ public class TitleMgr : MonoBehaviour
     AudioSource ASource;
     AudioClip AClip;
 
+    bool IsStarted = false;
     private void Awake()
     {
         ASource = GetComponent<AudioSource>();
@@ -54,6 +55,9 @@ public class TitleMgr : MonoBehaviour
 
     void StartBtnFunc()
     {
+        if (IsStarted)
+            return;
+        IsStarted = true;
         Character.GetComponent<TItleCharacterScript>().GameStartFunc();
         RefreshGValue();
         AClip = Resources.Load<AudioClip>("Sound/StartBGM");

@@ -10,7 +10,7 @@ public class CrystalScript : MonoBehaviour
     GameObject Player;
     bool IsCollected = false;
     bool IsFalling = true;
-
+    bool IsFindPlayer = false;
 
 
     ///////////////////
@@ -25,11 +25,11 @@ public class CrystalScript : MonoBehaviour
 
 
     bool IsUp = false;
-
+    AudioSource ASource;
   
     private void Awake()
     {
-
+        ASource=GetComponent<AudioSource>();
         Player = GameObject.Find("Player");
     }
     // Start is called before the first frame update
@@ -47,6 +47,18 @@ public class CrystalScript : MonoBehaviour
        
         transform.Rotate(rotAngle * rotSpeed * Time.deltaTime);        
         
+        if(IsFindPlayer)
+        {
+            Vector3 temp = Player.transform.position;
+            temp.y += 0.5f;
+            Vector3 Dir = temp - transform.position;
+            Dir.Normalize();
+
+            transform.position += Dir * Speed * Time.deltaTime;
+            Speed *= 1.01f;
+            return;
+        }
+
         if(IsFalling)
         {
             transform.position += HDir * HSpeed * Time.deltaTime;
@@ -59,7 +71,12 @@ public class CrystalScript : MonoBehaviour
             if(transform.position.y<=0.5f)
             {
                 if(!IsUp)
+                {
                     MaxVSpeed *= 0.7f;
+                    ASource.Play();
+                    ASource.volume *= 0.7f;
+                }
+                    
 
                 IsUp = true;
                 
@@ -87,11 +104,14 @@ public class CrystalScript : MonoBehaviour
         HDir.x = Random.Range(-1.0f, 1.0f);
         HDir.z = Random.Range(-1.0f, 1.0f);
         HDir.Normalize();
+        IsFindPlayer = false;
+        ASource.volume = 1;
     }
     private void OnDisable()
     {
         Speed = 0.1f;
-        StopCoroutine(CollectCo());
+        ASource.volume = 1;
+        
     }
 
     private void OnTriggerEnter(Collider other)
@@ -111,23 +131,16 @@ public class CrystalScript : MonoBehaviour
     {
         if (!Player)
             return;
-        
+
+        if (IsFindPlayer)
+            return;
+
         if ((Player.transform.position - transform.position).magnitude < 5)
         {
-            StartCoroutine(CollectCo());
+            IsFindPlayer = true;
         }
     }
-    IEnumerator CollectCo()
-    {
-        yield return null;
-        Vector3 temp = Player.transform.position;
-        temp.y += 0.5f;
-        Vector3 Dir = temp - transform.position;
-        Dir.Normalize();
-
-        transform.position += Dir * Speed * Time.deltaTime;
-        Speed *= 1.01f;
-    }
+   
 
    
 

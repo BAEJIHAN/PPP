@@ -1126,6 +1126,9 @@ public partial class PlayerScript : MonoBehaviour
 
     public void ABtnDown()
     {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
+
         if (PLAYERSTATE.MOVE == State || PLAYERSTATE.IDLE == State)
         {
             Ani.SetTrigger("AttackSmashStart");
@@ -1145,6 +1148,9 @@ public partial class PlayerScript : MonoBehaviour
     }
     public void DBtnDown()
     {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
+
         if (PLAYERSTATE.MOVE == State || PLAYERSTATE.IDLE == State)
         {
             Ani.SetTrigger("Defend");
@@ -1167,6 +1173,9 @@ public partial class PlayerScript : MonoBehaviour
     }
     public void ZBtnDown()
     {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
+
         IsZBtnOn = true;
 
         if (IsZBtnOn && IsXBtnOn && !IsSpinCoolOn)//Spin
@@ -1220,6 +1229,9 @@ public partial class PlayerScript : MonoBehaviour
     }
     public void XBtnDown()
     {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
+
         IsXBtnOn = true;
         if (IsZBtnOn && IsXBtnOn && !IsSpinCoolOn)//Spin
         {
@@ -1247,6 +1259,8 @@ public partial class PlayerScript : MonoBehaviour
 
     public void XBtnUp()
     {
+        
+
         IsXBtnOn = false;
         if (PLAYERSTATE.ATTACKA2 == State)//A공격 후속타
         {
@@ -1256,6 +1270,10 @@ public partial class PlayerScript : MonoBehaviour
 
     public void CBtn()
     {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
+
+
         if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)
         {
             Ani.SetTrigger("Roll");
@@ -1269,6 +1287,9 @@ public partial class PlayerScript : MonoBehaviour
 
     public void SpaceBtn()
     {
+        if (SampleMgr.Inst.IsOnBossEvent)
+            return;
+
         if (PLAYERSTATE.IDLE == State || PLAYERSTATE.MOVE == State)
         {
             Ani.SetTrigger("JumpAir");

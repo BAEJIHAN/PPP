@@ -59,7 +59,11 @@ public class DrakeAttackScript : MonoBehaviour
     public void SetTarget(GameObject target)
     {
         if (target == null)
+        {
+            StartDeath();
             return;
+        }
+            
         Target = target;
     }
 
@@ -72,12 +76,23 @@ public class DrakeAttackScript : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+
+    public void StartDeath()
+    {
+        StartCoroutine(DeathCol());
+    }
     IEnumerator SetOff()
     {
         yield return new WaitForSeconds(3);
 
         gameObject.SetActive(false);
 
+    }
+
+    IEnumerator DeathCol()
+    {
+        yield return new WaitForSeconds(3);
+        Destroy(gameObject);
     }
 
    

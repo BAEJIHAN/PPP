@@ -283,11 +283,17 @@ DebugRoot.SetActive(false);
     void ManualOpenBtnFunc()
     {
         Time.timeScale = 0.0f;
+#if (UNITY_IPHONE || UNITY_ANDROID)
+        MobileUI.SetActive(false);
+#endif
         ManualWindow.SetActive(true);
     }
     void ManualExitBtnFunc()
     {
         Time.timeScale = 1.0f;
+#if (UNITY_IPHONE || UNITY_ANDROID)
+        MobileUI.SetActive(true);
+#endif
         ManualWindow.SetActive(false);
     }
     void ToTitleBtnFunc()
@@ -431,7 +437,7 @@ DebugRoot.SetActive(false);
         TempRectTransform.sizeDelta = new Vector2(1520, TempRectTransform.sizeDelta.y);
 
         TempRectTransform = Minimap.GetComponent<RectTransform>();
-        TempRectTransform.anchoredPosition = new Vector2(-685, TempRectTransform.anchoredPosition.y);
+        TempRectTransform.anchoredPosition = new Vector2(-660, TempRectTransform.anchoredPosition.y);
         MobileMgr.Inst.MobileInit();
 
 

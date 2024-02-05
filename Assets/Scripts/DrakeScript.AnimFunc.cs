@@ -8,8 +8,12 @@ public partial class DrakeScript : MonoBehaviour
     {        
         if(!CurTarget.GetComponent<NormalMonRootScript>().IsDead)
         {
-            AttackSpawner.GetComponent<AttackSpawnerScript>().DrakeAttackSpawn(AttackPos.transform.position, CurTarget);
-           
+            //AttackSpawner.GetComponent<AttackSpawnerScript>().DrakeAttackSpawn(AttackPos.transform.position, CurTarget);
+
+            GameObject temp = Instantiate(Fireball);
+            temp.transform.position = AttackPos.transform.position;
+            temp.GetComponent<DrakeAttackScript>().SetTarget(CurTarget);
+
             AClip = Resources.Load<AudioClip>("Sound/DrakeAttack");
             ASource.PlayOneShot(AClip);
         }
